@@ -150,34 +150,14 @@ public class GameView extends LinearLayout {
         addRandNum();
         addRandNum();
 
-        SQLiteDatabase db= dbHelp.getWritableDatabase();
-        if(m_scole>0)
+
+        if(m_scole>200)
         {
-            //int gmaemode=((MainActivity)getContext()).gameMode;
-            //id rankdate Scole useTime mode
-            db.execSQL("insert into " + dbHelp.DB_Table + " (rankdate, Scole, useTime, mode) values ('2017-11-12 11:11:11:123',"+m_scole+",132,"+0+")");
-            //db.setTransactionSuccessful();
+            saveScole();
             m_scole=0;
         }
 
-        Cursor cursor = db.query(dbHelp.DB_Table,
-                new String[] {"max(Scole)"},
-                null,
-                null,
-                null, null, null);
-
-        Log.d("MyLog","cursor:"+cursor.getCount());
-
-        if(cursor.getCount()>0)
-        {
-            Log.d("MyLog","Curse Column="+cursor.getColumnCount());
-            cursor.moveToFirst();
-
-            m_maxScole=cursor.getInt(0);
-            TextView topScoleView= ((Activity)getContext()).findViewById(R.id.topScole);
-            topScoleView.setText(String.valueOf(m_maxScole));
-        }
-        db.close();
+        findTopScole();
 
         m_timercnt =0;
     }
@@ -601,6 +581,34 @@ public class GameView extends LinearLayout {
                 m_music.play("sound.step.to.line.mp3");
             }
         }
+    }
+
+    public void findTopScole()
+    {
+        SQLiteDatabase db= dbHelp.getWritableDatabase();
+        Cursor cursor = db.query(dbHelp.DB_Table,
+                new String[] {"max(Scole)"},
+                null,
+                null,
+                null, null, null);
+
+        if(cursor.getCount()>0)
+        {
+            Log.d("MyLog","Curse Column="+cursor.getColumnCount());
+            cursor.moveToFirst();
+
+            m_maxScole=cursor.getInt(0);
+            TextView topScoleView= ((Activity)getContext()).findViewById(R.id.topScole);
+            topScoleView.setText(String.valueOf(m_maxScole));
+        }
+        db.close();
+    }
+
+    public void saveScole()
+    {
+        SQLiteDatabase db= dbHelp.getWritableDatabase();
+        db.execSQL("insert into " + dbHelp.DB_Table + " (rankdate, Scole, useTime, mode) values ('2017-11-12 11:11:11:123',"+m_scole+",132,"+0+")");
+        db.close();
     }
 
     protected Card cardsMap[][] = null;

@@ -72,6 +72,17 @@ public class MainActivity extends AppCompatActivity {
     //    return db;
     //}
 
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        if(gameView!=null)
+        {
+            gameView.saveScole();
+        }
+    }
+
     private GameView gameView;
     //private GameViewNormal gameViewNormal;
     private Button btn1;
