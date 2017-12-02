@@ -530,10 +530,13 @@ public class GameView extends LinearLayout {
                 toCard.getLabel().setVisibility(View.INVISIBLE);
                 toCard.setVisibility(View.INVISIBLE);
                 //moveCard.setNum(0,Config.show_style);
-                //moveCard.setAnimation(null);
+                moveCard.setAnimation(null);
                 moveCard.clearAnimation();
 
-                //moveCard=null;
+                animation=null;     //防止内存泄露
+
+                ((MainActivity)getContext()).getViewLayout().removeView(moveCard);     //防止内存泄露
+                ((MainActivity)getContext()).getViewLayout().removeView(toCard);    //防止内存泄露
             }
         });
 
