@@ -32,7 +32,7 @@ public class StartActivity extends AppCompatActivity {
         btn1.setOnClickListener(new Button.OnClickListener(){
             @Override
             public void onClick(View view) {
-                saveConfig();
+                saveConfig("appConfig");
                 intent.setClass(StartActivity.this,MainActivity.class);
                 intent.putExtra("Mode",1);
                 startActivity(intent);
@@ -82,25 +82,26 @@ public class StartActivity extends AppCompatActivity {
     {
         //导入配置
         boolean flag=false;
-        flag=initfConfig();
+        String appconfigpath="appConfig";
+        flag=initDefConfig(appconfigpath);
         if(flag==false)
         {
-            saveConfig();
+            saveConfig(appconfigpath);
         }
 
-        flag=initDefTheme();
+        flag=initDefTheme(Config.game_theme);
         if(flag==false)
         {
-            saveTheme();
+            saveTheme(Config.game_theme);
         }
 
     }
 
-    private boolean initfConfig()
+    private boolean initDefConfig(String confstr)
     {
         Properties properties = new Properties();
         String extPath=getApplicationContext().getExternalFilesDir("").getAbsolutePath();
-        File file = new File(extPath+"/appConfig");
+        File file = new File(extPath+"/"+confstr);
         if(!file.exists()) {
             return false;
         }
@@ -121,18 +122,21 @@ public class StartActivity extends AppCompatActivity {
             }
 
             Config.Cnt = Integer.parseInt(properties.getProperty("lens","4"),10);
-            Config.show_style = Integer.parseInt(properties.getProperty("show_style","2"),10);
+
             Config.game_mode = Integer.parseInt(properties.getProperty("game_mode","1"),10);
             Config.game_music = Integer.parseInt(properties.getProperty("game_music","1"),10);
+            Config.game_theme = properties.getProperty("game_music","num_color");
         }
         return true;
     }
 
-    private boolean initDefTheme()
+    private boolean initDefTheme(String themestr)
     {
         Properties properties = new Properties();
-        String extPath=getApplicationContext().getExternalFilesDir("").getAbsolutePath();
-        File file = new File(extPath+"/appTheme");
+        String extPath=getApplicationContext().getExternalFilesDir(themestr).getAbsolutePath();
+        String filespath=extPath+"/"+themestr;
+        Log.d("MyLog","Path="+filespath);
+        File file = new File(filespath);
         if(!file.exists()) {
             return false;
         }
@@ -151,38 +155,68 @@ public class StartActivity extends AppCompatActivity {
                 e.printStackTrace();
                 return false;
             }
-
             int color_index=0;
-            Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_0","ffc0c0c0"));
-            Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_2","ffeee4da"));
-            Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_4","ffff66a3"));
-            Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_8","fff2b179"));
-            Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_16","fff59563"));
-            Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_32","ff66b2ff"));
-            Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_64","fff65e3b"));
-            Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_128","ffedcf72"));
-            Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_256","ff33cc33"));
-            Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_512","ff40ff00"));
-            Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_1024","ffff00ff"));
-            Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_2048","ffd926d9"));
-            Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_other","ff737373"));
+            Config.show_style = Integer.parseInt(properties.getProperty("show_style","2"),10);
+            switch(Config.show_style)
+            {
+                case 1:     //数字
+                    break;
+                case 3:     //图片
+                {
+                    color_index=0;
+                    Config.PicTable[color_index++] = properties.getProperty("pic_0","pic_0");
+                    Config.PicTable[color_index++] = properties.getProperty("pic_2","pic_2");
+                    Config.PicTable[color_index++] = properties.getProperty("pic_4","pic_4");
+                    Config.PicTable[color_index++] = properties.getProperty("pic_8","pic_8");
+                    Config.PicTable[color_index++] = properties.getProperty("pic_16","pic_16");
+                    Config.PicTable[color_index++] = properties.getProperty("pic_32","pic_32");
+                    Config.PicTable[color_index++] = properties.getProperty("pic_64","pic_64");
+                    Config.PicTable[color_index++] = properties.getProperty("pic_128","pic_128");
+                    Config.PicTable[color_index++] = properties.getProperty("pic_256","pic_256");
+                    Config.PicTable[color_index++] = properties.getProperty("pic_512","pic_512");
+                    Config.PicTable[color_index++] = properties.getProperty("pic_1024","pic_1024");
+                    Config.PicTable[color_index++] = properties.getProperty("pic_2048","pic_2048");
+                    Config.PicTable[color_index++] = properties.getProperty("pic_other","pic_other");
+                }
+                    break;
+                default:    //数字+颜色
+                {
+                    color_index=0;
+                    Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_0","ffc0c0c0"));
+                    Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_2","ffeee4da"));
+                    Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_4","ffff66a3"));
+                    Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_8","fff2b179"));
+                    Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_16","fff59563"));
+                    Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_32","ff66b2ff"));
+                    Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_64","fff65e3b"));
+                    Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_128","ffedcf72"));
+                    Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_256","ff33cc33"));
+                    Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_512","ff40ff00"));
+                    Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_1024","ffff00ff"));
+                    Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_2048","ffd926d9"));
+                    Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_other","ff737373"));
+                }
+                    break;
+
+            }
         }
         return true;
     }
 
-    private void saveConfig()
+    private void saveConfig(String confstr)
     {
         Properties properties = new Properties();
         String extPath=getApplicationContext().getExternalFilesDir("").getAbsolutePath();
-        File file = new File(extPath+"/appConfig");
+        File file = new File(extPath+"/"+confstr);
         try {
             file.createNewFile();
 
             FileOutputStream fos = new FileOutputStream(file);
             properties.setProperty("lens",String.valueOf(Config.Cnt));
-            properties.setProperty("show_style",String.valueOf(Config.show_style));
+
             properties.setProperty("game_mode",String.valueOf(Config.game_mode));
             properties.setProperty("game_music",String.valueOf(Config.game_music));
+            properties.setProperty("game_theme",Config.game_theme);
 
             properties.store(fos, null);
         } catch (IOException e) {
@@ -190,15 +224,19 @@ public class StartActivity extends AppCompatActivity {
         }
     }
 
-    private void saveTheme()
+    private void saveTheme(String themestr)
     {
         Properties properties = new Properties();
-        String extPath=getApplicationContext().getExternalFilesDir("").getAbsolutePath();
-        File file = new File(extPath+"/appTheme");
+        String extPath=getApplicationContext().getExternalFilesDir(themestr).getAbsolutePath();
+        String filespath=extPath+"/"+themestr;
+        File file = new File(filespath);
         try {
             file.createNewFile();
 
             FileOutputStream fos = new FileOutputStream(file);
+
+            properties.setProperty("show_style",String.valueOf(Config.show_style));
+
             int color_index=0;
 
             properties.setProperty("color_0",Config.toColorStr(Config.ColorTable[color_index++]));
@@ -215,7 +253,23 @@ public class StartActivity extends AppCompatActivity {
             properties.setProperty("color_2048",Integer.toHexString(Config.ColorTable[color_index++]));
             properties.setProperty("color_other",Integer.toHexString(Config.ColorTable[color_index++]));
 
+            //color_index=0;
+            //properties.setProperty("pic_0",Config.PicTable[color_index++]);
+            //properties.setProperty("pic_2",Config.PicTable[color_index++]);
+            //properties.setProperty("pic_4",Config.PicTable[color_index++]);
+            //properties.setProperty("pic_8",Config.PicTable[color_index++]);
+            //properties.setProperty("pic_16",Config.PicTable[color_index++]);
+            //properties.setProperty("pic_32",Config.PicTable[color_index++]);
+            //properties.setProperty("pic_64",Config.PicTable[color_index++]);
+            //properties.setProperty("pic_128",Config.PicTable[color_index++]);
+            //properties.setProperty("pic_256",Config.PicTable[color_index++]);
+            //properties.setProperty("pic_512",Config.PicTable[color_index++]);
+            //properties.setProperty("pic_1024",Config.PicTable[color_index++]);
+            //properties.setProperty("pic_2048",Config.PicTable[color_index++]);
+            //properties.setProperty("pic_other",Config.PicTable[color_index++]);
             properties.store(fos, null);
+
+
         } catch (IOException e) {
             e.printStackTrace();
         }

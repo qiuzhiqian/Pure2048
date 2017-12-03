@@ -26,6 +26,24 @@ public class Config {
     public static int game_music=1;
     public static int configVer[]={1,0,0};
 
+    public static String game_theme="themeConfig";
+
+    public static String PicTable[]={
+            "pic_0",
+            "pic_2",
+            "pic_4",
+            "pic_8",
+            "pic_16",
+            "pic_32",
+            "pic_64",
+            "pic_128",
+            "pic_256",
+            "pic_512",
+            "pic_1024",
+            "pic_2048",
+            "pic_other",
+    };
+
     public static String toColorStr(int val)
     {
         String colorStr=Integer.toHexString(val);

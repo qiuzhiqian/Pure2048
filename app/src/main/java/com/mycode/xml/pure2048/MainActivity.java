@@ -56,6 +56,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        btn2 = (Button)findViewById(R.id.btn_redo);
+        btn2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                gameView.undo();
+            }
+        });
+
     }
 
     public FrameLayout getViewLayout()
@@ -86,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
     private GameView gameView;
     //private GameViewNormal gameViewNormal;
     private Button btn1;
+    private Button btn2;
     public int gameMode;
     private DbHelper dbHelper;
     //private SQLiteDatabase db=null;
