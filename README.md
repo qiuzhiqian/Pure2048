@@ -29,4 +29,4 @@
 
 # 预览
 
-![预览1](https://raw.githubusercontent.com/qiuzhiqian/Pure2048/master/doc/review1.jpg)
+![预览1](https://raw.githubusercontent.com/qiuzhiqian/Pure2048/master/doc/review1.png)
