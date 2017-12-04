@@ -38,32 +38,31 @@ public class GameView extends LinearLayout {
         initGameView();
     }
 
-    private void initCardsMap(int cardnum[][])
+    private void initCardsMap(MapRecoder cardnum)
     {
         for(int y=0;y<Config.Cnt;y++)
         {
             for(int x=0;x<Config.Cnt;x++)
             {
-                cardsMap[y][x].setNum(cardnum[y][x],Config.show_style);
-                Log.d("MyCard","("+y+","+x+")="+cardnum[y][x]);
+                cardsMap[y][x].setNum(cardnum.cardmap[y][x],Config.show_style);
+                Log.d("MyCard","("+y+","+x+")="+cardnum.cardmap[y][x]);
             }
         }
     }
 
     private void PopCardsMap()      //出栈---对应撤销
     {
-        int cardnum[][]=null;
+        MapRecoder cardnum=null;
         int cnt=cardStack.size();
         if(cnt>1)
         {
             cardStack.remove(0);
-            cardnum=cardStack.get(0);
         }
-
+        cardnum=cardStack.get(0);
         initCardsMap(cardnum);
     }
 
-    private void PushCardsMap(int cardnum[][])      //入栈---对应操作
+    private void PushCardsMap(MapRecoder cardnum)      //入栈---对应操作
     {
         int cnt=cardStack.size();
 
@@ -81,20 +80,6 @@ public class GameView extends LinearLayout {
     }
 
     private void initGameView() {
-        cardStack.clear();
-
-        int cardnum[][]=new int[Config.Cnt][Config.Cnt];
-        for(int i=0;i<Config.Cnt;i++)
-        {
-            for(int j=0;j<Config.Cnt;j++)
-            {
-                cardnum[i][j]=0;
-            }
-        }
-
-        cardStack.add(cardnum);
-        cardnum=null;
-
         setOrientation(LinearLayout.VERTICAL);
         setBackgroundColor(0xffbbada0);
 
@@ -151,13 +136,12 @@ public class GameView extends LinearLayout {
         super.onSizeChanged(w, h, oldw, oldh);
 
         cardWidth = (Math.min(w, h) - 10) / Config.Cnt;
-
+        Log.d("MyScole","osc");
         cardsMap=new Card[Config.Cnt][Config.Cnt];
         addCard(cardWidth, cardWidth);
-        m_scole=0;
 
         dbHelp=((MainActivity)getContext()).getDBHelp();
-
+        Log.d("MyScole","osc1");
         startGame();
 
         m_timercnt =0;
@@ -189,23 +173,44 @@ public class GameView extends LinearLayout {
 
     public void startGame()
     {
-        int cardnum[][]=cardStack.get(0);
+        MapRecoder cardnum=null;
+        int cnt=cardStack.size();
+        if(cnt>0)
+        {
+            Log.d("MyScole","st");
+            cardnum=cardStack.get(0).objClone();
+            cardStack.clear();
+
+            if(cardnum.scole>200)
+            {
+                saveScole(cardnum.scole);
+            }
+        }
+        else
+        {
+            Log.d("MyScole","st1");
+            cardnum=new MapRecoder();
+            cardnum.scole=0;
+        }
+
+        calScole(cardnum.scole);
+        Log.d("MyScole","st3");
+
         for(int i=0;i<Config.Cnt;i++)
         {
             for(int j=0;j<Config.Cnt;j++)
             {
-                cardnum[i][j]=0;
+                cardnum.cardmap[i][j]=0;
             }
         }
+        cardnum.scole=0;
+
+        cardStack.add(cardnum);
+        initCardsMap(cardnum);
+        Log.d("MyScole","st3");
+
         addRandNum();
         addRandNum();
-
-
-        if(m_scole>200)
-        {
-            saveScole();
-            m_scole=0;
-        }
 
         findTopScole();
 
@@ -215,6 +220,7 @@ public class GameView extends LinearLayout {
     public void undo()
     {
         PopCardsMap();
+        calScole(cardStack.get(0).scole);
     }
 
     @Override
@@ -222,14 +228,7 @@ public class GameView extends LinearLayout {
         super.finalize();
 
         SQLiteDatabase db= dbHelp.getWritableDatabase();
-        if(m_scole>0)
-        {
-            //int gmaemode=((MainActivity)getContext()).gameMode;
-            //id rankdate Scole useTime mode
-            db.execSQL("insert into " + dbHelp.DB_Table + " (rankdate, Scole, useTime, mode) values ('2017-11-12 11:11:11:123',"+m_scole+",132,"+0+")");
-            //db.setTransactionSuccessful();
-            m_scole=0;
-        }
+        saveScole(cardStack.get(0).scole);
     }
 
     void timerStart()
@@ -263,7 +262,7 @@ public class GameView extends LinearLayout {
                 else            secStr="0"+String.valueOf(secInt);
                 //Log.d("MyLog",hourStr+":"+minStr+":"+secStr);
                 timeView.setText(hourStr+":"+minStr+":"+secStr);
-                calScole();
+                calScole(cardStack.get(0).scole);
                 //Log.d("MyLog","Timer End");
             }
         };
@@ -275,7 +274,7 @@ public class GameView extends LinearLayout {
     {
         int emptysize=0;
         int num=0;
-        int newTable[][]=cardStack.get(0);
+        MapRecoder newTable=cardStack.get(0);
 
         int val=Math.random()>0.1?2:4;
 
@@ -283,7 +282,7 @@ public class GameView extends LinearLayout {
         {
             for(int x=0;x<Config.Cnt;x++)
             {
-                if(newTable[y][x]==0)
+                if(newTable.cardmap[y][x]==0)
                     emptysize++;
             }
         }
@@ -294,10 +293,10 @@ public class GameView extends LinearLayout {
         for(int y=0;y<Config.Cnt;y++)
         {
             for(int x=0;x<Config.Cnt;x++) {
-                if(newTable[y][x]==0)
+                if(newTable.cardmap[y][x]==0)
                 {
                     if(index==num) {
-                        newTable[y][x]=val;
+                        newTable.cardmap[y][x]=val;
                         initCardsMap(newTable);
                         return;
                     }
@@ -317,17 +316,13 @@ public class GameView extends LinearLayout {
         boolean merge=false;
         boolean change=false;
         int mergeLevel=0;       //合并等级
-        int scoleBak=m_scole;
-        int tempList[][]=new int[Config.Cnt][Config.Cnt];
-        int newTable[][]=cardStack.get(0);
 
-        for(int y=0;y<Config.Cnt;y++)
-        {
-            for(int x=0;x<Config.Cnt;x++)
-            {
-                tempList[y][x]=newTable[y][x];
-            }
-        }
+        MapRecoder tempList=null;
+        MapRecoder newTable=cardStack.get(0);
+
+        tempList=newTable.objClone();
+
+        int scoleBak=tempList.scole;
 
         for(int y=0;y<Config.Cnt;y++)
         {
@@ -336,22 +331,22 @@ public class GameView extends LinearLayout {
                 for(int x1=x+1;x1<Config.Cnt;x1++)
                 {
                     //if(cardsMap[y][x1].getNum()>0)
-                    if(tempList[y][x1]>0)
+                    if(tempList.cardmap[y][x1]>0)
                     {
-                        if(tempList[y][x]<=0)  //交换
+                        if(tempList.cardmap[y][x]<=0)  //交换
                         {
-                            addMoveAnimation(tempList[y][x1],tempList[y][x],x1,x,y,y);
-                            tempList[y][x]=tempList[y][x1];
-                            tempList[y][x1]=0;
+                            addMoveAnimation(tempList.cardmap[y][x1],tempList.cardmap[y][x],x1,x,y,y);
+                            tempList.cardmap[y][x]=tempList.cardmap[y][x1];
+                            tempList.cardmap[y][x1]=0;
                             change=true;
                         }
-                        else if(tempList[y][x]==tempList[y][x1])
+                        else if(tempList.cardmap[y][x]==tempList.cardmap[y][x1])
                         {
-                            addMoveAnimation(tempList[y][x1],tempList[y][x],x1,x,y,y);
-                            tempList[y][x]=tempList[y][x1]*2;
-                            tempList[y][x1]=0;
+                            addMoveAnimation(tempList.cardmap[y][x1],tempList.cardmap[y][x],x1,x,y,y);
+                            tempList.cardmap[y][x]=tempList.cardmap[y][x1]*2;
+                            tempList.cardmap[y][x1]=0;
 
-                            m_scole+=tempList[y][x];
+                            tempList.scole+=tempList.cardmap[y][x];
                             merge=true;
                             change=true;
                         }
@@ -363,22 +358,22 @@ public class GameView extends LinearLayout {
                 }
             }
         }
-        musicRun(m_scole-scoleBak);
+        musicRun(tempList.scole-scoleBak);
 
         if(change)
         {
             PushCardsMap(tempList);
         }
 
-        tempList=null;
-        newTable=null;
-
         if(true)
         {
             checkOver();
             addRandNum();
-            calScole();
+            calScole(tempList.scole);
         }
+
+        tempList=null;
+        newTable=null;
     }
 
     protected void swipeRight()
@@ -386,18 +381,13 @@ public class GameView extends LinearLayout {
         boolean merge=false;
         boolean change=false;
         int mergeLevel=0;       //合并等级
-        int scoleBak=m_scole;
 
-        int tempList[][]=new int[Config.Cnt][Config.Cnt];
-        int newTable[][]=cardStack.get(0);
 
-        for(int y=0;y<Config.Cnt;y++)
-        {
-            for(int x=0;x<Config.Cnt;x++)
-            {
-                tempList[y][x]=newTable[y][x];
-            }
-        }
+        MapRecoder tempList=null;
+        MapRecoder newTable=cardStack.get(0);
+
+        tempList=newTable.objClone();
+        int scoleBak=tempList.scole;
 
         for(int y=0;y<Config.Cnt;y++)
         {
@@ -405,22 +395,22 @@ public class GameView extends LinearLayout {
             {
                 for(int x1=x-1;x1>=0;x1--)
                 {
-                    if(tempList[y][x1]>0)
+                    if(tempList.cardmap[y][x1]>0)
                     {
-                        if(tempList[y][x]<=0)  //交换
+                        if(tempList.cardmap[y][x]<=0)  //交换
                         {
-                            addMoveAnimation(tempList[y][x1],tempList[y][x],x1,x,y,y);
-                            tempList[y][x]=tempList[y][x1];
-                            tempList[y][x1]=0;
+                            addMoveAnimation(tempList.cardmap[y][x1],tempList.cardmap[y][x],x1,x,y,y);
+                            tempList.cardmap[y][x]=tempList.cardmap[y][x1];
+                            tempList.cardmap[y][x1]=0;
                             change=true;
                         }
-                        else if(tempList[y][x]==tempList[y][x1])
+                        else if(tempList.cardmap[y][x]==tempList.cardmap[y][x1])
                         {
-                            addMoveAnimation(tempList[y][x1],tempList[y][x],x1,x,y,y);
+                            addMoveAnimation(tempList.cardmap[y][x1],tempList.cardmap[y][x],x1,x,y,y);
 
-                            tempList[y][x]=tempList[y][x1]*2;
-                            tempList[y][x1]=0;
-                            m_scole+=tempList[y][x];
+                            tempList.cardmap[y][x]=tempList.cardmap[y][x1]*2;
+                            tempList.cardmap[y][x1]=0;
+                            tempList.scole+=tempList.cardmap[y][x];
                             merge=true;
                             change=true;
                         }
@@ -432,7 +422,7 @@ public class GameView extends LinearLayout {
                 }
             }
         }
-        musicRun(m_scole-scoleBak);
+        musicRun(tempList.scole-scoleBak);
 
         if(change)
         {
@@ -443,8 +433,11 @@ public class GameView extends LinearLayout {
         {
             checkOver();
             addRandNum();
-            calScole();
+            calScole(tempList.scole);
         }
+
+        tempList=null;
+        newTable=null;
     }
 
     protected void swipeUp()
@@ -452,18 +445,13 @@ public class GameView extends LinearLayout {
         boolean merge=false;
         boolean change=false;
         int mergeLevel=0;       //合并等级
-        int scoleBak=m_scole;
 
-        int tempList[][]=new int[Config.Cnt][Config.Cnt];
-        int newTable[][]=cardStack.get(0);
 
-        for(int y=0;y<Config.Cnt;y++)
-        {
-            for(int x=0;x<Config.Cnt;x++)
-            {
-                tempList[y][x]=newTable[y][x];
-            }
-        }
+        MapRecoder tempList=null;
+        MapRecoder newTable=cardStack.get(0);
+
+        tempList=newTable.objClone();
+        int scoleBak=tempList.scole;
 
         for(int x=0;x<Config.Cnt;x++)
         {
@@ -471,22 +459,22 @@ public class GameView extends LinearLayout {
             {
                 for(int y1=y+1;y1<Config.Cnt;y1++)
                 {
-                    if(tempList[y1][x]>0)
+                    if(tempList.cardmap[y1][x]>0)
                     {
-                        if(tempList[y][x]<=0)  //交换
+                        if(tempList.cardmap[y][x]<=0)  //交换
                         {
-                            addMoveAnimation(tempList[y1][x],tempList[y][x],x,x,y1,y);
-                            tempList[y][x]=tempList[y1][x];
-                            tempList[y1][x]=0;
+                            addMoveAnimation(tempList.cardmap[y1][x],tempList.cardmap[y][x],x,x,y1,y);
+                            tempList.cardmap[y][x]=tempList.cardmap[y1][x];
+                            tempList.cardmap[y1][x]=0;
                             change=true;
                         }
-                        else if(tempList[y][x]==tempList[y1][x])
+                        else if(tempList.cardmap[y][x]==tempList.cardmap[y1][x])
                         {
 
-                            addMoveAnimation(tempList[y1][x],tempList[y][x],x,x,y1,y);
-                            tempList[y][x]=tempList[y1][x]*2;
-                            tempList[y1][x]=0;
-                            m_scole+=tempList[y][x];
+                            addMoveAnimation(tempList.cardmap[y1][x],tempList.cardmap[y][x],x,x,y1,y);
+                            tempList.cardmap[y][x]=tempList.cardmap[y1][x]*2;
+                            tempList.cardmap[y1][x]=0;
+                            tempList.scole+=tempList.cardmap[y][x];
                             merge=true;
                             change=true;
                         }
@@ -498,7 +486,7 @@ public class GameView extends LinearLayout {
                 }
             }
         }
-        musicRun(m_scole-scoleBak);
+        musicRun(tempList.scole-scoleBak);
 
         if(change)
         {
@@ -509,8 +497,11 @@ public class GameView extends LinearLayout {
         {
             checkOver();
             addRandNum();
-            calScole();
+            calScole(tempList.scole);
         }
+
+        tempList=null;
+        newTable=null;
     }
 
     protected void swipeDown()
@@ -518,18 +509,13 @@ public class GameView extends LinearLayout {
         boolean merge=false;
         boolean change=false;
         int mergeLevel=0;       //合并等级
-        int scoleBak=m_scole;
 
-        int tempList[][]=new int[Config.Cnt][Config.Cnt];
-        int newTable[][]=cardStack.get(0);
 
-        for(int y=0;y<Config.Cnt;y++)
-        {
-            for(int x=0;x<Config.Cnt;x++)
-            {
-                tempList[y][x]=newTable[y][x];
-            }
-        }
+        MapRecoder tempList=null;
+        MapRecoder newTable=cardStack.get(0);
+
+        tempList=newTable.objClone();
+        int scoleBak=tempList.scole;
 
         for(int x=0;x<Config.Cnt;x++)
         {
@@ -537,22 +523,22 @@ public class GameView extends LinearLayout {
             {
                 for(int y1=y-1;y1>=0;y1--)
                 {
-                    if(tempList[y1][x]>0)
+                    if(tempList.cardmap[y1][x]>0)
                     {
-                        if(tempList[y][x]<=0)  //交换
+                        if(tempList.cardmap[y][x]<=0)  //交换
                         {
 
-                            addMoveAnimation(tempList[y1][x],tempList[y][x],x,x,y1,y);
-                            tempList[y][x]=tempList[y1][x];
-                            tempList[y1][x]=0;
+                            addMoveAnimation(tempList.cardmap[y1][x],tempList.cardmap[y][x],x,x,y1,y);
+                            tempList.cardmap[y][x]=tempList.cardmap[y1][x];
+                            tempList.cardmap[y1][x]=0;
                             change=true;
                         }
-                        else if(tempList[y][x]==tempList[y1][x])
+                        else if(tempList.cardmap[y][x]==tempList.cardmap[y1][x])
                         {
-                            addMoveAnimation(tempList[y1][x],tempList[y][x],x,x,y1,y);
-                            tempList[y][x]=tempList[y1][x]*2;
-                            tempList[y1][x]=0;
-                            m_scole+=tempList[y][x];
+                            addMoveAnimation(tempList.cardmap[y1][x],tempList.cardmap[y][x],x,x,y1,y);
+                            tempList.cardmap[y][x]=tempList.cardmap[y1][x]*2;
+                            tempList.cardmap[y1][x]=0;
+                            tempList.scole+=tempList.cardmap[y][x];
                             merge=true;
                             change=true;
                         }
@@ -564,7 +550,7 @@ public class GameView extends LinearLayout {
                 }
             }
         }
-        musicRun(m_scole-scoleBak);
+        musicRun(tempList.scole-scoleBak);
 
         if(change)
         {
@@ -575,8 +561,11 @@ public class GameView extends LinearLayout {
         {
             checkOver();
             addRandNum();
-            calScole();
+            calScole(tempList.scole);
         }
+
+        tempList=null;
+        newTable=null;
     }
 
     protected int checkOver()
@@ -681,11 +670,12 @@ public class GameView extends LinearLayout {
         moveCard.startAnimation(ta);
     }
 
-    private int calScole()
+    private int calScole(int sscole)
     {
         TextView scoleText= ((Activity)getContext()).findViewById(R.id.scoleText);
 
-        scoleText.setText(String.valueOf(m_scole));
+        scoleText.setText(String.valueOf(sscole));
+        scoleText=null;
         return 0;
     }
 
@@ -745,12 +735,49 @@ public class GameView extends LinearLayout {
         db.close();
     }
 
-    public void saveScole()
+    public void saveScole(int mscole)
     {
         SQLiteDatabase db= dbHelp.getWritableDatabase();
-        db.execSQL("insert into " + dbHelp.DB_Table + " (rankdate, Scole, useTime, mode) values ('2017-11-12 11:11:11:123',"+m_scole+",132,"+0+")");
+        db.execSQL("insert into " + dbHelp.DB_Table + " (rankdate, Scole, useTime, mode) values ('2017-11-12 11:11:11:123',"+mscole+",132,"+0+")");
         db.close();
     }
+
+    public void saveScole()
+    {
+        int mscole=0;
+        int cnt=cardStack.size();
+        if(cnt>0)
+        {
+            mscole=cardStack.get(0).scole;
+        }
+        SQLiteDatabase db= dbHelp.getWritableDatabase();
+        db.execSQL("insert into " + dbHelp.DB_Table + " (rankdate, Scole, useTime, mode) values ('2017-11-12 11:11:11:123',"+mscole+",132,"+0+")");
+        db.close();
+    }
+
+    public class MapRecoder{
+        public int cardmap[][];
+        public int scole=0;
+
+        MapRecoder()
+        {
+            cardmap=new int[Config.Cnt][Config.Cnt];
+        }
+
+        public MapRecoder objClone()
+        {
+            MapRecoder ret=new MapRecoder();
+            for(int y=0;y<Config.Cnt;y++)
+            {
+                for(int x=0;x<Config.Cnt;x++)
+                {
+                    ret.cardmap[y][x]=this.cardmap[y][x];
+                }
+            }
+            ret.scole=this.scole;
+            return ret;
+        }
+    };
 
     protected Card cardsMap[][] = null;
     protected boolean isOver;
@@ -770,5 +797,5 @@ public class GameView extends LinearLayout {
 
     private MusicManager m_music=null;
 
-    private List<int[][]> cardStack = new ArrayList<int[][]>();         //动作缓冲栈
+    private List<MapRecoder> cardStack = new ArrayList<MapRecoder>();         //动作缓冲栈
 }
