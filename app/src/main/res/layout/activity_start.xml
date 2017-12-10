@@ -22,6 +22,21 @@
 
     <FrameLayout
         android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+        <Button
+            android:id="@+id/theme_select"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+
+            android:background="@drawable/textview_round_border"
+            android:text="主题"/>
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
         android:layout_weight="1"
         android:layout_height="0dp">
         <Button

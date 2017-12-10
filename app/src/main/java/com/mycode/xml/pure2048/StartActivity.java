@@ -86,15 +86,18 @@ public class StartActivity extends AppCompatActivity {
         flag=initDefConfig(appconfigpath);
         if(flag==false)
         {
+            Log.d("MyConfig","Use def config");
             saveConfig(appconfigpath);
         }
 
+        Log.d("MyConfig","Theme="+Config.game_theme);
         flag=initDefTheme(Config.game_theme);
+
         if(flag==false)
         {
+            Log.d("MyConfig","Use def theme");
             saveTheme(Config.game_theme);
         }
-
     }
 
     private boolean initDefConfig(String confstr)
@@ -125,7 +128,7 @@ public class StartActivity extends AppCompatActivity {
 
             Config.game_mode = Integer.parseInt(properties.getProperty("game_mode","1"),10);
             Config.game_music = Integer.parseInt(properties.getProperty("game_music","1"),10);
-            Config.game_theme = properties.getProperty("game_music","num_color");
+            Config.game_theme = properties.getProperty("game_theme","num_color");
         }
         return true;
     }
@@ -135,7 +138,7 @@ public class StartActivity extends AppCompatActivity {
         Properties properties = new Properties();
         String extPath=getApplicationContext().getExternalFilesDir(themestr).getAbsolutePath();
         String filespath=extPath+"/"+themestr;
-        Log.d("MyLog","Path="+filespath);
+        Log.d("MyConfig","Path="+filespath);
         File file = new File(filespath);
         if(!file.exists()) {
             return false;
@@ -155,46 +158,64 @@ public class StartActivity extends AppCompatActivity {
                 e.printStackTrace();
                 return false;
             }
-            int color_index=0;
+            int num_index=0;
             Config.show_style = Integer.parseInt(properties.getProperty("show_style","2"),10);
             switch(Config.show_style)
             {
                 case 1:     //数字
                     break;
                 case 3:     //图片
-                {
-                    color_index=0;
-                    Config.PicTable[color_index++] = properties.getProperty("pic_0","pic_0");
-                    Config.PicTable[color_index++] = properties.getProperty("pic_2","pic_2");
-                    Config.PicTable[color_index++] = properties.getProperty("pic_4","pic_4");
-                    Config.PicTable[color_index++] = properties.getProperty("pic_8","pic_8");
-                    Config.PicTable[color_index++] = properties.getProperty("pic_16","pic_16");
-                    Config.PicTable[color_index++] = properties.getProperty("pic_32","pic_32");
-                    Config.PicTable[color_index++] = properties.getProperty("pic_64","pic_64");
-                    Config.PicTable[color_index++] = properties.getProperty("pic_128","pic_128");
-                    Config.PicTable[color_index++] = properties.getProperty("pic_256","pic_256");
-                    Config.PicTable[color_index++] = properties.getProperty("pic_512","pic_512");
-                    Config.PicTable[color_index++] = properties.getProperty("pic_1024","pic_1024");
-                    Config.PicTable[color_index++] = properties.getProperty("pic_2048","pic_2048");
-                    Config.PicTable[color_index++] = properties.getProperty("pic_other","pic_other");
-                }
-                    break;
                 default:    //数字+颜色
                 {
-                    color_index=0;
-                    Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_0","ffc0c0c0"));
-                    Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_2","ffeee4da"));
-                    Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_4","ffff66a3"));
-                    Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_8","fff2b179"));
-                    Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_16","fff59563"));
-                    Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_32","ff66b2ff"));
-                    Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_64","fff65e3b"));
-                    Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_128","ffedcf72"));
-                    Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_256","ff33cc33"));
-                    Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_512","ff40ff00"));
-                    Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_1024","ffff00ff"));
-                    Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_2048","ffd926d9"));
-                    Config.ColorTable[color_index++] = Color.parseColor("#"+properties.getProperty("color_other","ff737373"));
+                    num_index=0;
+                    Config.NumTable[num_index] = properties.getProperty("show_0",Config.NumTable[num_index]);
+                    num_index++;
+                    Config.NumTable[num_index] = properties.getProperty("show_2",Config.NumTable[num_index]);
+                    num_index++;
+                    Config.NumTable[num_index] = properties.getProperty("show_4",Config.NumTable[num_index]);
+                    num_index++;
+                    Config.NumTable[num_index] = properties.getProperty("show_8",Config.NumTable[num_index]);
+                    num_index++;
+                    Config.NumTable[num_index] = properties.getProperty("show_16",Config.NumTable[num_index]);
+                    num_index++;
+                    Config.NumTable[num_index] = properties.getProperty("show_32",Config.NumTable[num_index]);
+                    num_index++;
+                    Config.NumTable[num_index] = properties.getProperty("show_64",Config.NumTable[num_index]);
+                    num_index++;
+                    Config.NumTable[num_index] = properties.getProperty("show_128",Config.NumTable[num_index]);
+                    num_index++;
+                    Config.NumTable[num_index] = properties.getProperty("show_256",Config.NumTable[num_index]);
+                    num_index++;
+                    Config.NumTable[num_index] = properties.getProperty("show_512",Config.NumTable[num_index]);
+                    num_index++;
+                    Config.NumTable[num_index] = properties.getProperty("show_1024",Config.NumTable[num_index]);
+                    num_index++;
+                    Config.NumTable[num_index] = properties.getProperty("show_2048",Config.NumTable[num_index]);
+                    num_index++;
+                    Config.NumTable[num_index] = properties.getProperty("show_4096",Config.NumTable[num_index]);
+                    num_index++;
+                    Config.NumTable[num_index] = properties.getProperty("show_8192",Config.NumTable[num_index]);
+                    num_index++;
+                    Config.NumTable[num_index] = properties.getProperty("show_16384",Config.NumTable[num_index]);
+                    num_index++;
+                    Config.NumTable[num_index] = properties.getProperty("show_32768",Config.NumTable[num_index]);
+                    num_index++;
+                    Config.NumTable[num_index] = properties.getProperty("show_65536",Config.NumTable[num_index]);
+                    num_index++;
+                    Config.NumTable[num_index] = properties.getProperty("show_131072",Config.NumTable[num_index]);
+                    num_index++;
+                    Config.NumTable[num_index] = properties.getProperty("show_262144",Config.NumTable[num_index]);
+                    num_index++;
+                    Config.NumTable[num_index] = properties.getProperty("show_524288",Config.NumTable[num_index]);
+                    num_index++;
+                    Config.NumTable[num_index] = properties.getProperty("show_1048676",Config.NumTable[num_index]);
+                    num_index++;
+                    Config.NumTable[num_index] = properties.getProperty("show_2097152",Config.NumTable[num_index]);
+                    num_index++;
+                    Config.NumTable[num_index] = properties.getProperty("show_other",Config.NumTable[num_index]);
+                    num_index++;
+
+                    Config.initBpList(extPath);
                 }
                     break;
 
@@ -221,6 +242,7 @@ public class StartActivity extends AppCompatActivity {
             properties.store(fos, null);
         } catch (IOException e) {
             e.printStackTrace();
+            Log.d("MyConfig","saveConfig Excep");
         }
     }
 
@@ -237,38 +259,32 @@ public class StartActivity extends AppCompatActivity {
 
             properties.setProperty("show_style",String.valueOf(Config.show_style));
 
-            int color_index=0;
+            int num_index=0;
 
-            properties.setProperty("color_0",Config.toColorStr(Config.ColorTable[color_index++]));
-            properties.setProperty("color_2",Integer.toHexString(Config.ColorTable[color_index++]));
-            properties.setProperty("color_4",Integer.toHexString(Config.ColorTable[color_index++]));
-            properties.setProperty("color_8",Integer.toHexString(Config.ColorTable[color_index++]));
-            properties.setProperty("color_16",Integer.toHexString(Config.ColorTable[color_index++]));
-            properties.setProperty("color_32",Integer.toHexString(Config.ColorTable[color_index++]));
-            properties.setProperty("color_64",Integer.toHexString(Config.ColorTable[color_index++]));
-            properties.setProperty("color_128",Integer.toHexString(Config.ColorTable[color_index++]));
-            properties.setProperty("color_256",Integer.toHexString(Config.ColorTable[color_index++]));
-            properties.setProperty("color_512",Integer.toHexString(Config.ColorTable[color_index++]));
-            properties.setProperty("color_1024",Integer.toHexString(Config.ColorTable[color_index++]));
-            properties.setProperty("color_2048",Integer.toHexString(Config.ColorTable[color_index++]));
-            properties.setProperty("color_other",Integer.toHexString(Config.ColorTable[color_index++]));
-
-            //color_index=0;
-            //properties.setProperty("pic_0",Config.PicTable[color_index++]);
-            //properties.setProperty("pic_2",Config.PicTable[color_index++]);
-            //properties.setProperty("pic_4",Config.PicTable[color_index++]);
-            //properties.setProperty("pic_8",Config.PicTable[color_index++]);
-            //properties.setProperty("pic_16",Config.PicTable[color_index++]);
-            //properties.setProperty("pic_32",Config.PicTable[color_index++]);
-            //properties.setProperty("pic_64",Config.PicTable[color_index++]);
-            //properties.setProperty("pic_128",Config.PicTable[color_index++]);
-            //properties.setProperty("pic_256",Config.PicTable[color_index++]);
-            //properties.setProperty("pic_512",Config.PicTable[color_index++]);
-            //properties.setProperty("pic_1024",Config.PicTable[color_index++]);
-            //properties.setProperty("pic_2048",Config.PicTable[color_index++]);
-            //properties.setProperty("pic_other",Config.PicTable[color_index++]);
+            properties.setProperty("show_0",Config.NumTable[num_index++]);
+            properties.setProperty("show_2",Config.NumTable[num_index++]);
+            properties.setProperty("show_4",Config.NumTable[num_index++]);
+            properties.setProperty("show_8",Config.NumTable[num_index++]);
+            properties.setProperty("show_16",Config.NumTable[num_index++]);
+            properties.setProperty("show_32",Config.NumTable[num_index++]);
+            properties.setProperty("show_64",Config.NumTable[num_index++]);
+            properties.setProperty("show_128",Config.NumTable[num_index++]);
+            properties.setProperty("show_256",Config.NumTable[num_index++]);
+            properties.setProperty("show_512",Config.NumTable[num_index++]);
+            properties.setProperty("show_1024",Config.NumTable[num_index++]);
+            properties.setProperty("show_2048",Config.NumTable[num_index++]);
+            properties.setProperty("show_4096",Config.NumTable[num_index++]);
+            properties.setProperty("show_8192",Config.NumTable[num_index++]);
+            properties.setProperty("show_16384",Config.NumTable[num_index++]);
+            properties.setProperty("show_32768",Config.NumTable[num_index++]);
+            properties.setProperty("show_65536",Config.NumTable[num_index++]);
+            properties.setProperty("show_131072",Config.NumTable[num_index++]);
+            properties.setProperty("show_262144",Config.NumTable[num_index++]);
+            properties.setProperty("show_524288",Config.NumTable[num_index++]);
+            properties.setProperty("show_1048676",Config.NumTable[num_index++]);
+            properties.setProperty("show_2097152",Config.NumTable[num_index++]);
+            properties.setProperty("show_other",Config.NumTable[num_index++]);
             properties.store(fos, null);
-
 
         } catch (IOException e) {
             e.printStackTrace();

@@ -44,8 +44,10 @@ public class GameView extends LinearLayout {
         {
             for(int x=0;x<Config.Cnt;x++)
             {
-                cardsMap[y][x].setNum(cardnum.cardmap[y][x],Config.show_style);
                 Log.d("MyCard","("+y+","+x+")="+cardnum.cardmap[y][x]);
+                Log.d("MyCard","Style="+Config.show_style);
+                cardsMap[y][x].setNum(cardnum.cardmap[y][x],Config.show_style);
+
             }
         }
     }
@@ -204,10 +206,10 @@ public class GameView extends LinearLayout {
             }
         }
         cardnum.scole=0;
-
+        Log.d("MyScole","st4");
         cardStack.add(cardnum);
         initCardsMap(cardnum);
-        Log.d("MyScole","st3");
+        Log.d("MyScole","st6");
 
         addRandNum();
         addRandNum();

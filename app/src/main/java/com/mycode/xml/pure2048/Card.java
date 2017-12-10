@@ -1,6 +1,10 @@
 package com.mycode.xml.pure2048;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -45,48 +49,93 @@ public class Card extends FrameLayout {
 
         this.num=num;
 
-        if(showMask==0 || showMask==2)
+        switch(showMask)
         {
-            if(num==0)
+            case 0:     //数字
+                if(num==0)
+                    label.setText("");
+                else
+                    label.setText(num+"");
+
+                label.setBackgroundColor(Color.parseColor("#"+Config.NumTable[0]));
+                break;
+            case 1:     //颜色
                 label.setText("");
-            else
-                label.setText(num+"");
-        }
-        else
-        {
-            label.setText("");
-        }
+                setCardColor();
+                break;
+            case 2:     //数字+颜色
+                Log.d("MyCard","set Color and Num");
+                if(num==0)
+                    label.setText("");
+                else
+                    label.setText(num+"");
 
-        if(showMask==1 || showMask==2)
-        {
-            if(num==0)
-            {
-                label.setBackgroundColor(Config.ColorTable[0]);
-            }
-            else if(num<=2048)
-            {
-                int cnt=0;
-                while(true)
+                setCardColor();
+                break;
+            case 3:     //图片主题
+                if(num==0)
                 {
-                    num/=2;
-                    if(num>0)
-                        cnt++;
-                    else
-                        break;
+                    setCardBitmap(0);
                 }
-                label.setBackgroundColor(Config.ColorTable[cnt]);
-            }
-            else
-            {
-                label.setBackgroundColor(Config.ColorTable[Config.ColorTable.length-1]);
-            }
+                else if(num<=2097152)
+                {
+                    int cnt=getIndex(num);
+                    setCardBitmap(cnt);
+                }
+                else
+                {
+                    setCardBitmap(Config.bmlist.size()-1);
+                }
+                break;
+            default:
+                break;
+        }
+
+    }
+
+    private void setCardColor()
+    {
+        //int colorval=Color.parseColor(Config.NumTable[num]);
+        //Log.d("MyCard","color="+Config.NumTable[num]);
+        if(num==0)
+        {
+            label.setBackgroundColor(Color.parseColor("#"+Config.NumTable[0]));
+        }
+        else if(num<=2097152)
+        {
+            int cnt=getIndex(num);
+            Log.d("MyCard","cnt="+cnt);
+            label.setBackgroundColor(Color.parseColor("#"+Config.NumTable[cnt]));
         }
         else
         {
-            label.setBackgroundColor(Config.ColorTable[0]);
+            label.setBackgroundColor(Color.parseColor("#"+Config.NumTable[Config.NumTable.length-1]));
         }
+    }
 
+    private void setCardBitmap(int index)
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            label.setBackground(new BitmapDrawable(Config.bmlist.get(index)));
+        }
+        else
+        {
+            label.setBackgroundDrawable(new BitmapDrawable(Config.bmlist.get(index)));
+        }
+    }
 
+    private int getIndex(int num)
+    {
+        int cnt=0;
+        while(true)
+        {
+            num/=2;
+            if(num>0)
+                cnt++;
+            else
+                break;
+        }
+        return cnt;
     }
 
     public boolean equals(Card c)
