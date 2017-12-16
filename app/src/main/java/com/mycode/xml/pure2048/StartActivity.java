@@ -35,11 +35,6 @@ public class StartActivity extends AppCompatActivity {
         spinner =(Spinner)findViewById(R.id.spinner01);
 
         themeList=new ArrayList<String>();
-        String extPath=getApplicationContext().getExternalFilesDir("themes").getAbsolutePath();
-        initThemeList(extPath);
-
-        //themeList.add("num_color");
-        //themeList.add("chaodai");
 
         adapter=new ArrayAdapter<String>(this,R.layout.support_simple_spinner_dropdown_item,themeList);
         spinner.setAdapter(adapter);
@@ -134,6 +129,16 @@ public class StartActivity extends AppCompatActivity {
         }
 
         Log.d("MyConfig","Theme="+Config.game_theme);
+
+        //创建默认主题文件夹
+        String extPath=getApplicationContext().getExternalFilesDir("themes").getAbsolutePath();
+        File fileDir=new File(extPath+"/"+Config.game_theme);
+        if(!fileDir.isDirectory())
+        {
+            fileDir.mkdir();
+        }
+
+        initThemeList(extPath);
 
         setThemeSelect(Config.game_theme);
 
@@ -343,7 +348,7 @@ public class StartActivity extends AppCompatActivity {
     public void initThemeList(String dirpath)
     {
         File file=new File(dirpath);
-        themeList.clear();
+        adapter.clear();
 
         File files[] = file.listFiles();
         for(File f : files)
@@ -351,7 +356,7 @@ public class StartActivity extends AppCompatActivity {
             Log.d("MyConfig","file:"+f.getName());
             if(f.isDirectory())
             {
-                themeList.add(f.getName());
+                adapter.add(f.getName());
             }
         }
 
