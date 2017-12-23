@@ -88,6 +88,26 @@ show_other=0_null.png
 
 # 预览
 
-![预览1](https://raw.githubusercontent.com/qiuzhiqian/Pure2048/master/doc/review1.png)
+## 设置1
 
-![预览1](https://raw.githubusercontent.com/qiuzhiqian/Pure2048/master/doc/review2.png)
+![设置3](https://raw.githubusercontent.com/qiuzhiqian/Pure2048/master/doc/review1.png)
+
+## 设置2
+
+![设置3](https://raw.githubusercontent.com/qiuzhiqian/Pure2048/master/doc/review2.png)
+
+## 设置3
+
+![设置3](https://raw.githubusercontent.com/qiuzhiqian/Pure2048/master/doc/review3.png)
+
+## 使用默认主题，4x4
+
+![预览1](https://raw.githubusercontent.com/qiuzhiqian/Pure2048/master/doc/review4.png)
+
+## 使用拓展朝代主题，4x4
+
+![预览2](https://raw.githubusercontent.com/qiuzhiqian/Pure2048/master/doc/review5.png)
+
+## 使用拓展朝代主题，5x5
+
+![预览2](https://raw.githubusercontent.com/qiuzhiqian/Pure2048/master/doc/review6.png)
