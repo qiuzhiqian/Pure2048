@@ -40,9 +40,9 @@ public class GameView extends LinearLayout {
 
     private void initCardsMap(MapRecoder cardnum)
     {
-        for(int y=0;y<Config.Cnt;y++)
+        for(int y=0;y<Config.game_lens;y++)
         {
-            for(int x=0;x<Config.Cnt;x++)
+            for(int x=0;x<Config.game_lens;x++)
             {
                 Log.d("MyCard","("+y+","+x+")="+cardnum.cardmap[y][x]);
                 Log.d("MyCard","Style="+Config.show_style);
@@ -137,9 +137,9 @@ public class GameView extends LinearLayout {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
 
-        cardWidth = (Math.min(w, h) - 10) / Config.Cnt;
+        cardWidth = (Math.min(w, h) - 10) / Config.game_lens;
         Log.d("MyScole","osc");
-        cardsMap=new Card[Config.Cnt][Config.Cnt];
+        cardsMap=new Card[Config.game_lens][Config.game_lens];
         addCard(cardWidth, cardWidth);
 
         dbHelp=((MainActivity)getContext()).getDBHelp();
@@ -155,12 +155,12 @@ public class GameView extends LinearLayout {
         LinearLayout line = null;
         LinearLayout.LayoutParams linelp = null;
 
-        for (int y = 0; y < Config.Cnt; y++) {
+        for (int y = 0; y < Config.game_lens; y++) {
             line = new LinearLayout(getContext());
             linelp = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, h);
             addView(line, linelp);
 
-            for (int x = 0; x < Config.Cnt; x++) {
+            for (int x = 0; x < Config.game_lens; x++) {
                 c = new Card(getContext());
 
                 LinearLayout.LayoutParams cardlp = new LinearLayout.LayoutParams(w-10, w-10);
@@ -198,9 +198,9 @@ public class GameView extends LinearLayout {
         calScole(cardnum.scole);
         Log.d("MyScole","st3");
 
-        for(int i=0;i<Config.Cnt;i++)
+        for(int i=0;i<Config.game_lens;i++)
         {
-            for(int j=0;j<Config.Cnt;j++)
+            for(int j=0;j<Config.game_lens;j++)
             {
                 cardnum.cardmap[i][j]=0;
             }
@@ -280,9 +280,9 @@ public class GameView extends LinearLayout {
 
         int val=Math.random()>0.1?2:4;
 
-        for(int y=0;y<Config.Cnt;y++)
+        for(int y=0;y<Config.game_lens;y++)
         {
-            for(int x=0;x<Config.Cnt;x++)
+            for(int x=0;x<Config.game_lens;x++)
             {
                 if(newTable.cardmap[y][x]==0)
                     emptysize++;
@@ -292,9 +292,9 @@ public class GameView extends LinearLayout {
         num=(int)(Math.random()*emptysize);
 
         int index=0;
-        for(int y=0;y<Config.Cnt;y++)
+        for(int y=0;y<Config.game_lens;y++)
         {
-            for(int x=0;x<Config.Cnt;x++) {
+            for(int x=0;x<Config.game_lens;x++) {
                 if(newTable.cardmap[y][x]==0)
                 {
                     if(index==num) {
@@ -326,11 +326,11 @@ public class GameView extends LinearLayout {
 
         int scoleBak=tempList.scole;
 
-        for(int y=0;y<Config.Cnt;y++)
+        for(int y=0;y<Config.game_lens;y++)
         {
-            for(int x=0;x<Config.Cnt;x++)
+            for(int x=0;x<Config.game_lens;x++)
             {
-                for(int x1=x+1;x1<Config.Cnt;x1++)
+                for(int x1=x+1;x1<Config.game_lens;x1++)
                 {
                     //if(cardsMap[y][x1].getNum()>0)
                     if(tempList.cardmap[y][x1]>0)
@@ -391,9 +391,9 @@ public class GameView extends LinearLayout {
         tempList=newTable.objClone();
         int scoleBak=tempList.scole;
 
-        for(int y=0;y<Config.Cnt;y++)
+        for(int y=0;y<Config.game_lens;y++)
         {
-            for(int x=Config.Cnt-1;x>=0;x--)
+            for(int x=Config.game_lens-1;x>=0;x--)
             {
                 for(int x1=x-1;x1>=0;x1--)
                 {
@@ -455,11 +455,11 @@ public class GameView extends LinearLayout {
         tempList=newTable.objClone();
         int scoleBak=tempList.scole;
 
-        for(int x=0;x<Config.Cnt;x++)
+        for(int x=0;x<Config.game_lens;x++)
         {
-            for(int y=0;y<Config.Cnt;y++)
+            for(int y=0;y<Config.game_lens;y++)
             {
-                for(int y1=y+1;y1<Config.Cnt;y1++)
+                for(int y1=y+1;y1<Config.game_lens;y1++)
                 {
                     if(tempList.cardmap[y1][x]>0)
                     {
@@ -519,9 +519,9 @@ public class GameView extends LinearLayout {
         tempList=newTable.objClone();
         int scoleBak=tempList.scole;
 
-        for(int x=0;x<Config.Cnt;x++)
+        for(int x=0;x<Config.game_lens;x++)
         {
-            for(int y=Config.Cnt-1;y>=0;y--)
+            for(int y=Config.game_lens-1;y>=0;y--)
             {
                 for(int y1=y-1;y1>=0;y1--)
                 {
@@ -573,9 +573,9 @@ public class GameView extends LinearLayout {
     protected int checkOver()
     {
         int zeroCnt=0;
-        for(int y=0;y<Config.Cnt;y++)
+        for(int y=0;y<Config.game_lens;y++)
         {
-            for(int x=0;x<Config.Cnt;x++)
+            for(int x=0;x<Config.game_lens;x++)
             {
                 if(cardsMap[y][x].getNum()==0)
                 {
@@ -763,15 +763,15 @@ public class GameView extends LinearLayout {
 
         MapRecoder()
         {
-            cardmap=new int[Config.Cnt][Config.Cnt];
+            cardmap=new int[Config.game_lens][Config.game_lens];
         }
 
         public MapRecoder objClone()
         {
             MapRecoder ret=new MapRecoder();
-            for(int y=0;y<Config.Cnt;y++)
+            for(int y=0;y<Config.game_lens;y++)
             {
-                for(int x=0;x<Config.Cnt;x++)
+                for(int x=0;x<Config.game_lens;x++)
                 {
                     ret.cardmap[y][x]=this.cardmap[y][x];
                 }

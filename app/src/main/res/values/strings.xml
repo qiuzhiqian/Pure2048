@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Pure2048</string>
     <string name="start">开始</string>
+    <string name="test">test</string>
 </resources>

@@ -14,7 +14,7 @@ import java.util.List;
 
 public class Config {
 
-    public static int Cnt=4;
+    public static int game_lens=4;
     public static String NumTable[]={
             "ffc0c0c0",     //0 60, 63, 65
             "fffec463",     //2
