@@ -73,6 +73,7 @@ public class Card extends FrameLayout {
                 setCardColor();
                 break;
             case 3:     //图片主题
+                background.setBackgroundColor(0x00ffffff);
                 if(num==0)
                 {
                     setCardBitmap(0);

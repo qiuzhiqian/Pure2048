@@ -35,6 +35,9 @@ public class StartActivity extends AppCompatActivity {
     private int numCheckedIndex=0;
     private List<String> numList = null;
 
+    private int modeCheckedIndex=0;
+    private List<String> modeList=null;
+
     private int recorderCheckedIndex=0;
     private List<String> recorderList=null;
 
@@ -57,10 +60,12 @@ public class StartActivity extends AppCompatActivity {
 
         themesList = new ArrayList<String>();
         numList = new ArrayList<String>();
+        modeList = new ArrayList<String>();
         recorderList = new ArrayList<String>();
 
         initThemeList(rootPath+"/"+"themes");
         initNumList();
+        initModeList();
         initRecordList(rootPath+"/"+"recorders");
 
         initData();
@@ -87,16 +92,19 @@ public class StartActivity extends AppCompatActivity {
                 switch(position)
                 {
                     case 0:
-                        switchChange();
+                        switchChange(position);
                         break;
                     case 1:
-                        showThemeList();
+                        showThemeList(position);
                         break;
                     case 2:
-                        showNumList();
+                        showNumList(position);
                         break;
                     case 3:
-                        showRecorderList();
+                        showModeList(position);
+                        break;
+                    case 4:
+                        showRecorderList(position);
                         break;
                     default:
                         break;
@@ -144,7 +152,9 @@ public class StartActivity extends AppCompatActivity {
         SettingMenu musicItem = new SettingMenu();
         SettingMenu themeItem = new SettingMenu();
         SettingMenu numItem = new SettingMenu();
+        SettingMenu modeItem = new SettingMenu();
         SettingMenu fileItem = new SettingMenu();
+
         musicItem.setTitle("音效开关");
         musicItem.setType(0);
         themeItem.setTitle("主题选择");
@@ -153,12 +163,17 @@ public class StartActivity extends AppCompatActivity {
         numItem.setTitle("矩阵数量");
         numItem.setVal("4x4");
         numItem.setType(1);
+        modeItem.setTitle("模式选择");
+        modeItem.setVal("");
+        modeItem.setType(1);
         fileItem.setTitle("档案载入");
         fileItem.setVal("");
         fileItem.setType(1);
+
         mDatas.add(musicItem);
         mDatas.add(themeItem);
         mDatas.add(numItem);
+        mDatas.add(modeItem);
         mDatas.add(fileItem);
     }
 
@@ -183,12 +198,12 @@ public class StartActivity extends AppCompatActivity {
 
     }
 
-    private void showThemeList()
+    private void showThemeList(final int index)
     {
         int len = themesList.size();
         if(len==0)
         {
-            mDatas.get(1).setVal("");
+            mDatas.get(index).setVal("");
             themeCheckedIndex=0;
             return;
         }
@@ -204,7 +219,7 @@ public class StartActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 themeCheckedIndex=i;
-                mDatas.get(1).setVal(themesList.get(themeCheckedIndex));
+                mDatas.get(index).setVal(themesList.get(themeCheckedIndex));
                 recycleAdapter.notifyDataSetChanged();
                 dialogInterface.dismiss();
                 Config.game_theme=themesList.get(themeCheckedIndex);
@@ -230,7 +245,7 @@ public class StartActivity extends AppCompatActivity {
         numList.add("10x10");
     }
 
-    private void showNumList()
+    private void showNumList(final int index)
     {
         int len = numList.size();
         String[] items= new String[len];
@@ -245,10 +260,42 @@ public class StartActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 numCheckedIndex=i;
-                mDatas.get(2).setVal(numList.get(numCheckedIndex));
+                mDatas.get(index).setVal(numList.get(numCheckedIndex));
                 recycleAdapter.notifyDataSetChanged();
                 dialogInterface.dismiss();
                 Config.game_lens=(numCheckedIndex+4);
+            }
+        });
+        builder.create();
+        builder.show();
+    }
+
+    private void initModeList()
+    {
+        modeList.clear();
+        modeList.add("普通模式");
+        modeList.add("生存模式");
+    }
+
+    private void showModeList(final int index)
+    {
+        int len = modeList.size();
+        String[] items= new String[len];
+        modeList.toArray(items);
+        if(modeCheckedIndex>=len)  modeCheckedIndex=0;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        //设置标题
+        builder.setTitle("请选择模式");
+        //设置图标
+        builder.setIcon(R.mipmap.ic_launcher);
+        builder.setSingleChoiceItems(items, modeCheckedIndex, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                modeCheckedIndex=i;
+                mDatas.get(index).setVal(modeList.get(modeCheckedIndex));
+                recycleAdapter.notifyDataSetChanged();
+                dialogInterface.dismiss();
+                Config.game_lens=(modeCheckedIndex+4);
             }
         });
         builder.create();
@@ -275,12 +322,12 @@ public class StartActivity extends AppCompatActivity {
         }
     }
 
-    private void showRecorderList()
+    private void showRecorderList(final int index)
     {
         int len = recorderList.size();
         if(len==0)
         {
-            mDatas.get(3).setVal("");
+            mDatas.get(index).setVal("");
             recorderCheckedIndex=0;
             return;
         }
@@ -296,7 +343,7 @@ public class StartActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 recorderCheckedIndex=i;
-                mDatas.get(3).setVal(recorderList.get(recorderCheckedIndex));
+                mDatas.get(index).setVal(recorderList.get(recorderCheckedIndex));
                 recycleAdapter.notifyDataSetChanged();
                 dialogInterface.dismiss();
             }
@@ -305,17 +352,17 @@ public class StartActivity extends AppCompatActivity {
         builder.show();
     }
 
-    private void switchChange()
+    private void switchChange(int index)
     {
-        if(mDatas.get(0).getSwtchSta())
+        if(mDatas.get(index).getSwtchSta())
         {
-            mDatas.get(0).setSwitchSta(false);
+            mDatas.get(index).setSwitchSta(false);
             recycleAdapter.notifyDataSetChanged();
             Config.game_music=0;
         }
         else
         {
-            mDatas.get(0).setSwitchSta(true);
+            mDatas.get(index).setSwitchSta(true);
             recycleAdapter.notifyDataSetChanged();
             Config.game_music=1;
         }
@@ -573,5 +620,6 @@ public class StartActivity extends AppCompatActivity {
 
         mDatas.get(1).setVal(themesList.get(themeCheckedIndex));
         mDatas.get(2).setVal(numList.get(numCheckedIndex));
+        mDatas.get(3).setVal(modeList.get(modeCheckedIndex));
     }
 }
