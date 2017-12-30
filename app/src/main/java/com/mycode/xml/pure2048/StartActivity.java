@@ -55,8 +55,6 @@ public class StartActivity extends AppCompatActivity {
         Log.d("MyPath","rootPath="+rootPath);
 
         initConfig("appConfig");
-        initTheme(Config.game_theme);
-
 
         themesList = new ArrayList<String>();
         numList = new ArrayList<String>();
@@ -64,6 +62,11 @@ public class StartActivity extends AppCompatActivity {
         recorderList = new ArrayList<String>();
 
         initThemeList(rootPath+"/"+"themes");
+        if(themesList.size()==0)    //说明没有主题，则创建默认主题
+        {
+            creatDefTheme("num_color");
+            initThemeList(rootPath+"/"+"themes");   //重新刷新列表
+        }
         initNumList();
         initModeList();
         initRecordList(rootPath+"/"+"recorders");
@@ -130,6 +133,7 @@ public class StartActivity extends AppCompatActivity {
                 }
                 intent.setClass(StartActivity.this,MainActivity.class);
                 intent.putExtra("Mode",1);
+                intent.putExtra("Recorder",mDatas.get(4).getVal());
                 startActivity(intent);
 
                 StartActivity.this.finish();
@@ -312,6 +316,8 @@ public class StartActivity extends AppCompatActivity {
             file.mkdir();
         }
 
+        recorderList.add("");
+
         File files[] = file.listFiles();
         for(File f : files)
         {
@@ -433,7 +439,7 @@ public class StartActivity extends AppCompatActivity {
         }
     }
 
-    private void initTheme(String themestr)
+    private void creatDefTheme(String themestr)
     {
         Properties properties = new Properties();
         String themeDir=rootPath+"/themes";
@@ -455,10 +461,6 @@ public class StartActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-        else
-        {
-            loadTheme(file);
         }
     }
 
@@ -581,6 +583,14 @@ public class StartActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        int len=Config.NumTable.length;
+        List<String> tempList=Config.colorList;
+        tempList.clear();
+        for(int i=0;i<len;i++)
+        {
+            tempList.add(Config.NumTable[i]);
+        }
     }
 
     private void defSelect()
@@ -618,8 +628,11 @@ public class StartActivity extends AppCompatActivity {
         if(i>=cnt)  i=0;
         numCheckedIndex=i;
 
+        recorderCheckedIndex=0;
+
         mDatas.get(1).setVal(themesList.get(themeCheckedIndex));
         mDatas.get(2).setVal(numList.get(numCheckedIndex));
         mDatas.get(3).setVal(modeList.get(modeCheckedIndex));
+        mDatas.get(4).setVal(recorderList.get(recorderCheckedIndex));
     }
 }

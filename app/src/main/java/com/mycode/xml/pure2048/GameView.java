@@ -16,6 +16,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +30,11 @@ import java.util.List;
  */
 
 public class GameView extends LinearLayout {
+
+    private int usedRecord=0;
+    private String rootPath=null;
+    private String rcName=null;
+
     public GameView(Context context) {
         super(context);
 
@@ -44,10 +53,7 @@ public class GameView extends LinearLayout {
         {
             for(int x=0;x<Config.game_lens;x++)
             {
-                Log.d("MyCard","("+y+","+x+")="+cardnum.cardmap[y][x]);
-                Log.d("MyCard","Style="+Config.show_style);
                 cardsMap[y][x].setNum(cardnum.cardmap[y][x],Config.show_style);
-
             }
         }
     }
@@ -61,7 +67,7 @@ public class GameView extends LinearLayout {
             cardStack.remove(0);
         }
         cardnum=cardStack.get(0);
-        initCardsMap(cardnum);
+        //initCardsMap(cardnum);
     }
 
     private void PushCardsMap(MapRecoder cardnum)      //入栈---对应操作
@@ -70,9 +76,9 @@ public class GameView extends LinearLayout {
 
         cardStack.add(0,cardnum);
 
-        initCardsMap(cardnum);
+        //initCardsMap(cardnum);
 
-        if(cnt>10)
+        if(cnt>10)      //保证只有10个
         {
             for(int i=0;i<cnt-10;i++)
             {
@@ -97,6 +103,10 @@ public class GameView extends LinearLayout {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        dbHelp=((MainActivity)getContext()).getDBHelp();
+        rootPath=getContext().getExternalFilesDir("").getAbsolutePath();
+        Log.d("MyGame","rootPath="+rootPath);
 
         setOnTouchListener(new View.OnTouchListener() {
             private float startX, startY, offsetX, offsetY;
@@ -137,16 +147,21 @@ public class GameView extends LinearLayout {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
 
+        if(!readRecorder(rootPath+"/recorders/"+rcName))
+        {
+            addRandNum(cardStack.get(0));
+            addRandNum(cardStack.get(0));
+        }
         cardWidth = (Math.min(w, h) - 10) / Config.game_lens;
-        Log.d("MyScole","osc");
+        Log.d("MyGame","osc1");
         cardsMap=new Card[Config.game_lens][Config.game_lens];
         addCard(cardWidth, cardWidth);
 
-        dbHelp=((MainActivity)getContext()).getDBHelp();
-        Log.d("MyScole","osc1");
-        startGame();
+        showScole(cardStack.get(0).scole);
+        initCardsMap(cardStack.get(0));
 
-        m_timercnt =0;
+        findTopScole();
+
         timerStart();
     }
 
@@ -179,25 +194,18 @@ public class GameView extends LinearLayout {
         int cnt=cardStack.size();
         if(cnt>0)
         {
-            Log.d("MyScole","st");
-            cardnum=cardStack.get(0).objClone();
-            cardStack.clear();
+            cardnum=cardStack.get(0);
 
             if(cardnum.scole>200)
             {
                 saveScole(cardnum.scole);
             }
         }
-        else
-        {
-            Log.d("MyScole","st1");
-            cardnum=new MapRecoder();
-            cardnum.scole=0;
-        }
 
-        calScole(cardnum.scole);
-        Log.d("MyScole","st3");
+        findTopScole();
 
+        cardnum=new MapRecoder();
+        cardStack.clear();
         for(int i=0;i<Config.game_lens;i++)
         {
             for(int j=0;j<Config.game_lens;j++)
@@ -206,15 +214,13 @@ public class GameView extends LinearLayout {
             }
         }
         cardnum.scole=0;
-        Log.d("MyScole","st4");
         cardStack.add(cardnum);
+
+        addRandNum(cardStack.get(0));
+        addRandNum(cardStack.get(0));
+
+        showScole(cardnum.scole);
         initCardsMap(cardnum);
-        Log.d("MyScole","st6");
-
-        addRandNum();
-        addRandNum();
-
-        findTopScole();
 
         m_timercnt =0;
     }
@@ -222,14 +228,15 @@ public class GameView extends LinearLayout {
     public void undo()
     {
         PopCardsMap();
-        calScole(cardStack.get(0).scole);
+        initCardsMap(cardStack.get(0));
+        showScole(cardStack.get(0).scole);
     }
 
     @Override
     protected void finalize() throws Throwable {
         super.finalize();
 
-        SQLiteDatabase db= dbHelp.getWritableDatabase();
+        //SQLiteDatabase db= dbHelp.getWritableDatabase();
         saveScole(cardStack.get(0).scole);
     }
 
@@ -264,7 +271,7 @@ public class GameView extends LinearLayout {
                 else            secStr="0"+String.valueOf(secInt);
                 //Log.d("MyLog",hourStr+":"+minStr+":"+secStr);
                 timeView.setText(hourStr+":"+minStr+":"+secStr);
-                calScole(cardStack.get(0).scole);
+                //showScole(cardStack.get(0).scole);
                 //Log.d("MyLog","Timer End");
             }
         };
@@ -272,6 +279,7 @@ public class GameView extends LinearLayout {
         handler.postDelayed(runnable,1000);
     }
 
+    //淘汰
     public void addRandNum()
     {
         int emptysize=0;
@@ -308,6 +316,40 @@ public class GameView extends LinearLayout {
         }
 
         initCardsMap(newTable);
+    }
+
+    //对一笔记录生成一个随机块
+    public void addRandNum(MapRecoder cardnum)
+    {
+        int emptysize=0;
+        int num=0;
+        int val=Math.random()>0.1?2:4;
+
+        for(int y=0;y<Config.game_lens;y++)
+        {
+            for(int x=0;x<Config.game_lens;x++)
+            {
+                if(cardnum.cardmap[y][x]==0)
+                    emptysize++;
+            }
+        }
+
+        num=(int)(Math.random()*emptysize);
+
+        int index=0;
+        for(int y=0;y<Config.game_lens;y++)
+        {
+            for(int x=0;x<Config.game_lens;x++) {
+                if(cardnum.cardmap[y][x]==0)
+                {
+                    if(index==num) {
+                        cardnum.cardmap[y][x]=val;
+                        return;
+                    }
+                    index++;
+                }
+            }
+        }
     }
 
     //原理：x与x+1交换,如果x+1为空，查找下一个直到不为空，不为空就做处理，处理如下：
@@ -369,9 +411,10 @@ public class GameView extends LinearLayout {
 
         if(true)
         {
-            checkOver();
-            addRandNum();
-            calScole(tempList.scole);
+            //checkOver();
+            addRandNum(cardStack.get(0));
+            showScole(cardStack.get(0).scole);
+            initCardsMap(cardStack.get(0));
         }
 
         tempList=null;
@@ -433,9 +476,10 @@ public class GameView extends LinearLayout {
 
         if(true)
         {
-            checkOver();
-            addRandNum();
-            calScole(tempList.scole);
+            //checkOver();
+            addRandNum(cardStack.get(0));
+            showScole(cardStack.get(0).scole);
+            initCardsMap(cardStack.get(0));
         }
 
         tempList=null;
@@ -497,9 +541,10 @@ public class GameView extends LinearLayout {
 
         if(true)
         {
-            checkOver();
-            addRandNum();
-            calScole(tempList.scole);
+            //checkOver();
+            addRandNum(cardStack.get(0));
+            showScole(cardStack.get(0).scole);
+            initCardsMap(cardStack.get(0));
         }
 
         tempList=null;
@@ -561,9 +606,10 @@ public class GameView extends LinearLayout {
 
         if(true)
         {
-            checkOver();
-            addRandNum();
-            calScole(tempList.scole);
+            //checkOver();
+            addRandNum(cardStack.get(0));
+            showScole(cardStack.get(0).scole);
+            initCardsMap(cardStack.get(0));
         }
 
         tempList=null;
@@ -672,7 +718,7 @@ public class GameView extends LinearLayout {
         moveCard.startAnimation(ta);
     }
 
-    private int calScole(int sscole)
+    private int showScole(int sscole)
     {
         TextView scoleText= ((Activity)getContext()).findViewById(R.id.scoleText);
 
@@ -780,6 +826,119 @@ public class GameView extends LinearLayout {
             return ret;
         }
     };
+
+    public void setRcName(String rc)
+    {
+        rcName=rc;
+    }
+
+    public void writeRecorder(String rcPath)
+    {
+        MapRecoder numrecord=null;
+        if(cardStack.size()==0)
+        {
+            return;
+        }
+        numrecord = cardStack.get(0);
+
+        byte[] buff = new byte[256];
+        int hour=m_timercnt/3600;
+        int min=(m_timercnt%60)/60;
+        int sec=m_timercnt%3600;
+        int index=0;
+        buff[index++]=(byte)hour;
+        buff[index++]=(byte)min;
+        buff[index++]=(byte)sec;
+
+        int scole=numrecord.scole;
+        buff[index++]=(byte)(scole>>24);
+        buff[index++]=(byte)(scole>>16);
+        buff[index++]=(byte)(scole>>8);
+        buff[index++]=(byte)(scole);
+
+        buff[index++]=(byte)Config.game_lens;
+
+        int val=0;
+        for(int y=0;y<Config.game_lens*Config.game_lens;y++)
+        {
+            val=numrecord.cardmap[y/Config.game_lens][y%Config.game_lens];
+            //val*=base;
+            buff[index++]=(byte)(val>>24);
+            buff[index++]=(byte)(val>>16);
+            buff[index++]=(byte)(val>>8);
+            buff[index++]=(byte)(val);
+        }
+        File file=new File(rcPath);
+        if(!file.isFile())
+        {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(buff,0,index);
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean readRecorder(String rcPath)
+    {
+        byte[] buff = new byte[256];
+        int index=0;
+        cardStack.clear();
+        MapRecoder numrecord = new MapRecoder();
+
+        File file=new File(rcPath);
+        try {
+            if(!file.isFile())
+            {
+                m_timercnt=0;
+                for(int y=0;y<Config.game_lens*Config.game_lens;y++)
+                {
+                    numrecord.cardmap[y/Config.game_lens][y%Config.game_lens]=0;
+                }
+                cardStack.add(numrecord);
+                return false;
+            }
+
+            FileInputStream fis=new FileInputStream(file);
+            fis.read(buff,0,256);
+            fis.close();
+
+            m_timercnt=(buff[index]&0xff)*60*60+(buff[index+1]&0xff)*60+(buff[index+2]&0xff);
+            index+=3;
+
+            numrecord.scole=((buff[index]&0xff)<<24)+((buff[index+1]&0xff)<<16)+((buff[index+2]&0xff)<<8)+(buff[index+3]&0xff);
+            index+=4;
+
+            Config.game_lens=(int)buff[index++];
+
+            int val=0;
+            for(int y=0;y<Config.game_lens*Config.game_lens;y++)
+            {
+                val=((buff[index]&0xff)<<24)+((buff[index+1]&0xff)<<16)+((buff[index+2]&0xff)<<8)+(buff[index+3]&0xff);
+                index+=4;
+                numrecord.cardmap[y/Config.game_lens][y%Config.game_lens]=val;
+            }
+            cardStack.add(numrecord);
+        } catch (IOException e) {
+            e.printStackTrace();
+            m_timercnt=0;
+            for(int y=0;y<Config.game_lens*Config.game_lens;y++)
+            {
+                numrecord.cardmap[y/Config.game_lens][y%Config.game_lens]=0;
+            }
+            cardStack.add(numrecord);
+            return false;
+        }
+        return true;
+    }
 
     protected Card cardsMap[][] = null;
     protected boolean isOver;

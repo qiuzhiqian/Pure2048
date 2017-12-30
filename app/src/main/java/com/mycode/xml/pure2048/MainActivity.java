@@ -9,12 +9,16 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 
+import java.util.Date;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        rootPath = getApplicationContext().getExternalFilesDir("").getAbsolutePath();
 
         gameMode=1;
 
@@ -30,9 +34,13 @@ public class MainActivity extends AppCompatActivity {
         dbHelper=new DbHelper(this,extPath+"/rank.db");
         //db = dbHelper.getWritableDatabase();
 
-
         gameMode = intent.getIntExtra("Mode",1);
-        Log.d("MyLog","gameMod="+gameMode);
+        rcName = intent.getStringExtra("Recorder");
+        if(rcName==null)
+        {
+            rcName = "";
+        }
+        //Log.d("MyLog","gameMod="+gameMode);
 
         if(gameMode==1)
         {
@@ -42,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
         {
             gameView=new GameView(this);
         }
+        gameView.setRcName(rcName);
 
         //FrameLayout fmy=new FrameLayout(getApplicationContext());
         FrameLayout.LayoutParams linelp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
@@ -61,6 +70,34 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 gameView.undo();
+            }
+        });
+
+        btn3 = (Button)findViewById(R.id.btn_record);
+        btn3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Date today = new Date();
+                int year=today.getYear()+1900;
+                int month=today.getMonth()+1;
+                int day=today.getDate();
+                int hour=today.getHours();
+                int min=today.getMinutes();
+                int sec=today.getSeconds();
+                String sYear=null,sMon=null,sDay=null,sHour=null,sMin=null,sSec=null;
+                if(month<10)    sMon="0"+month;
+                else    sMon=""+month;
+                if(day<10)  sDay="0"+day;
+                else    sDay=""+day;
+                if(hour<10) sHour="0"+hour;
+                else    sHour=""+hour;
+                if(min<10)  sMin="0"+min;
+                else    sMin=""+min;
+                if(sec<10)  sSec="0"+sec;
+                else    sSec=""+sec;
+                String saveName = "RC-"+year+sMon+sDay+sHour+sMin+sSec;
+                Log.d("MyRecord",saveName);
+                gameView.writeRecorder(rootPath+"/"+"recorders"+"/"+saveName);
             }
         });
 
@@ -91,12 +128,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    String rootPath=null;
     private GameView gameView;
     //private GameViewNormal gameViewNormal;
     private Button btn1;
     private Button btn2;
+    private Button btn3;
     public int gameMode;
     private DbHelper dbHelper;
     //private SQLiteDatabase db=null;
     private FrameLayout viewLayout;
+    private String rcName=null;
 }

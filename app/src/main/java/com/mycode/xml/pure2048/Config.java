@@ -41,6 +41,11 @@ public class Config {
             "ff9bde7a",     //other
     };
 
+    //public static void initColorList()
+    //{
+    //
+    //}
+
     public static void initBpList(String url)
     {
         int cnt=NumTable.length;
@@ -53,7 +58,9 @@ public class Config {
         }
     }
 
+    public static List<String> colorList=new ArrayList<String>();
     public static List<Bitmap> bmlist=new ArrayList<Bitmap>();
+
     public static int show_style=2;
     public static int game_mode=0;
     public static int game_music=1;
