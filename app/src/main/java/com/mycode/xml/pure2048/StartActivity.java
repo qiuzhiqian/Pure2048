@@ -123,13 +123,16 @@ public class StartActivity extends AppCompatActivity {
             public void onClick(View v) {
                 File file = new File(rootPath+"/appConfig");        //保存当前配置
                 saveConfig(file);
+                File pf=new File(rootPath+"/themes"+"/"+Config.game_theme+"/"+Config.game_theme);
+                loadTheme(pf);      //加載主題内容
                 Log.d("MyConfig","show_style="+Config.show_style);
                 if(Config.show_style>2)
                 {
+
                     Log.d("MyConfig","use png data");
                     String themePath=rootPath+"/themes"+"/"+Config.game_theme;
                     Log.d("MyConfig","themePath="+themePath);
-                    Config.initBpList(themePath);
+                    Config.initBpList(themePath);       //加載圖片内容
                 }
                 intent.setClass(StartActivity.this,MainActivity.class);
                 intent.putExtra("Mode",1);
@@ -229,8 +232,8 @@ public class StartActivity extends AppCompatActivity {
                 Config.game_theme=themesList.get(themeCheckedIndex);
 
                 //主题加载
-                File pf=new File(rootPath+"/themes"+"/"+Config.game_theme+"/"+Config.game_theme);
-                loadTheme(pf);
+                //File pf=new File(rootPath+"/themes"+"/"+Config.game_theme+"/"+Config.game_theme);
+                //loadTheme(pf);
             }
         });
         builder.create();
@@ -464,19 +467,22 @@ public class StartActivity extends AppCompatActivity {
         }
     }
 
-    private void loadTheme(File pfile)
+    private boolean loadTheme(File pfile)
     {
         Properties properties = new Properties();
         FileInputStream fis = null;
+        String val=null;
         try {
             fis = new FileInputStream(pfile);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            return false;
         }
         try {
             properties.load(fis);
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
         int num_index=0;
         Config.show_style = Integer.parseInt(properties.getProperty("show_style","2"),10);
@@ -487,58 +493,42 @@ public class StartActivity extends AppCompatActivity {
             case 3:     //图片
             default:    //数字+颜色
             {
-                num_index=0;
-                Config.NumTable[num_index] = properties.getProperty("show_0",Config.NumTable[num_index]);
-                num_index++;
-                Config.NumTable[num_index] = properties.getProperty("show_2",Config.NumTable[num_index]);
-                num_index++;
-                Config.NumTable[num_index] = properties.getProperty("show_4",Config.NumTable[num_index]);
-                num_index++;
-                Config.NumTable[num_index] = properties.getProperty("show_8",Config.NumTable[num_index]);
-                num_index++;
-                Config.NumTable[num_index] = properties.getProperty("show_16",Config.NumTable[num_index]);
-                num_index++;
-                Config.NumTable[num_index] = properties.getProperty("show_32",Config.NumTable[num_index]);
-                num_index++;
-                Config.NumTable[num_index] = properties.getProperty("show_64",Config.NumTable[num_index]);
-                num_index++;
-                Config.NumTable[num_index] = properties.getProperty("show_128",Config.NumTable[num_index]);
-                num_index++;
-                Config.NumTable[num_index] = properties.getProperty("show_256",Config.NumTable[num_index]);
-                num_index++;
-                Config.NumTable[num_index] = properties.getProperty("show_512",Config.NumTable[num_index]);
-                num_index++;
-                Config.NumTable[num_index] = properties.getProperty("show_1024",Config.NumTable[num_index]);
-                num_index++;
-                Config.NumTable[num_index] = properties.getProperty("show_2048",Config.NumTable[num_index]);
-                num_index++;
-                Config.NumTable[num_index] = properties.getProperty("show_4096",Config.NumTable[num_index]);
-                num_index++;
-                Config.NumTable[num_index] = properties.getProperty("show_8192",Config.NumTable[num_index]);
-                num_index++;
-                Config.NumTable[num_index] = properties.getProperty("show_16384",Config.NumTable[num_index]);
-                num_index++;
-                Config.NumTable[num_index] = properties.getProperty("show_32768",Config.NumTable[num_index]);
-                num_index++;
-                Config.NumTable[num_index] = properties.getProperty("show_65536",Config.NumTable[num_index]);
-                num_index++;
-                Config.NumTable[num_index] = properties.getProperty("show_131072",Config.NumTable[num_index]);
-                num_index++;
-                Config.NumTable[num_index] = properties.getProperty("show_262144",Config.NumTable[num_index]);
-                num_index++;
-                Config.NumTable[num_index] = properties.getProperty("show_524288",Config.NumTable[num_index]);
-                num_index++;
-                Config.NumTable[num_index] = properties.getProperty("show_1048676",Config.NumTable[num_index]);
-                num_index++;
-                Config.NumTable[num_index] = properties.getProperty("show_2097152",Config.NumTable[num_index]);
-                num_index++;
-                Config.NumTable[num_index] = properties.getProperty("show_other",Config.NumTable[num_index]);
-                num_index++;
-                Log.d("MyConfig","Config.NumTable0="+Config.NumTable[0]);
+                int base=1;
+                val=properties.getProperty("show_0");
+                if(val==null)   //读取失败
+                {
+                    return false;
+                }
+                Config.colorList.clear();
+                Config.colorList.add(val);
+
+                val=properties.getProperty("show_other");
+                if(val==null)
+                {
+                    return false;
+                }
+                Config.colorList.add(val);
+
+                int trycnt=30;
+                while((trycnt--)>0)
+                {
+                    base*=2;
+                    val=properties.getProperty("show_"+base);
+                    if(val==null)       //说明查找完毕
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        Config.colorList.add(val);
+                    }
+                }
+
+
             }
             break;
-
         }
+        return true;
     }
 
     private void saveTheme(File pfile)
@@ -556,6 +546,7 @@ public class StartActivity extends AppCompatActivity {
         int num_index=0;
 
         properties.setProperty("show_0",Config.NumTable[num_index++]);
+        properties.setProperty("show_other",Config.NumTable[num_index++]);
         properties.setProperty("show_2",Config.NumTable[num_index++]);
         properties.setProperty("show_4",Config.NumTable[num_index++]);
         properties.setProperty("show_8",Config.NumTable[num_index++]);
@@ -577,7 +568,7 @@ public class StartActivity extends AppCompatActivity {
         properties.setProperty("show_524288",Config.NumTable[num_index++]);
         properties.setProperty("show_1048676",Config.NumTable[num_index++]);
         properties.setProperty("show_2097152",Config.NumTable[num_index++]);
-        properties.setProperty("show_other",Config.NumTable[num_index++]);
+
         try {
             properties.store(fos, null);
         } catch (IOException e) {

@@ -57,7 +57,7 @@ public class Card extends FrameLayout {
                 else
                     label.setText(num+"");
 
-                label.setBackgroundColor(Color.parseColor("#"+Config.NumTable[0]));
+                label.setBackgroundColor(Color.parseColor("#"+Config.colorList.get(0)));
                 break;
             case 1:     //颜色
                 label.setText("");
@@ -78,14 +78,23 @@ public class Card extends FrameLayout {
                 {
                     setCardBitmap(0);
                 }
-                else if(num<=2097152)
+                else if(num>0)
                 {
+                    int maxcnt=Config.colorList.size();
                     int cnt=getIndex(num);
-                    setCardBitmap(cnt);
+                    //setCardBitmap(cnt);
+                    if(cnt<=(maxcnt-2))
+                    {
+                        setCardBitmap(cnt+1);
+                    }
+                    else
+                    {
+                        setCardBitmap(1);
+                    }
                 }
                 else
                 {
-                    setCardBitmap(Config.bmlist.size()-1);
+                    setCardBitmap(1);
                 }
                 break;
             default:
@@ -96,21 +105,28 @@ public class Card extends FrameLayout {
 
     private void setCardColor()
     {
-        //int colorval=Color.parseColor(Config.NumTable[num]);
-        //Log.d("MyCard","color="+Config.NumTable[num]);
+        int maxcnt=Config.colorList.size();
         if(num==0)
         {
-            label.setBackgroundColor(Color.parseColor("#"+Config.NumTable[0]));
+            label.setBackgroundColor(Color.parseColor("#"+Config.colorList.get(0)));
         }
-        else if(num<=2097152)
+        else if(num>0)
         {
             int cnt=getIndex(num);
+            if(cnt<=(maxcnt-2))
+            {
+                label.setBackgroundColor(Color.parseColor("#"+Config.colorList.get(cnt+1)));
+            }
+            else
+            {
+                label.setBackgroundColor(Color.parseColor("#"+Config.colorList.get(1)));
+            }
             Log.d("MyCard","cnt="+cnt);
-            label.setBackgroundColor(Color.parseColor("#"+Config.NumTable[cnt]));
+
         }
         else
         {
-            label.setBackgroundColor(Color.parseColor("#"+Config.NumTable[Config.NumTable.length-1]));
+            label.setBackgroundColor(Color.parseColor("#"+Config.colorList.get(1)));
         }
     }
 

@@ -17,6 +17,7 @@ public class Config {
     public static int game_lens=4;
     public static String NumTable[]={
             "ffc0c0c0",     //0 60, 63, 65
+            "ff9bde7a",     //other
             "fffec463",     //2
             "fff36b49",     //4
             "ffdff711",     //8
@@ -38,7 +39,6 @@ public class Config {
             "ff5f318c",     //524288
             "ff732b4b",     //1048676
             "ffc56775",     //2097152
-            "ff9bde7a",     //other
     };
 
     //public static void initColorList()
@@ -48,12 +48,12 @@ public class Config {
 
     public static void initBpList(String url)
     {
-        int cnt=NumTable.length;
+        int cnt=colorList.size();
         Bitmap tempbp=null;
         bmlist.clear();
         for(int i=0;i<cnt;i++)
         {
-            tempbp=getLocalBitmap(url+"/"+NumTable[i]);
+            tempbp=getLocalBitmap(url+"/"+colorList.get(i));
             bmlist.add(tempbp);
         }
     }

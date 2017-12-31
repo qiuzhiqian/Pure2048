@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import java.util.Date;
 
@@ -97,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
                 else    sSec=""+sec;
                 String saveName = "RC-"+year+sMon+sDay+sHour+sMin+sSec;
                 Log.d("MyRecord",saveName);
+                Toast.makeText(MainActivity.this,"Save "+saveName,Toast.LENGTH_SHORT).show();
                 gameView.writeRecorder(rootPath+"/"+"recorders"+"/"+saveName);
             }
         });
@@ -113,10 +115,6 @@ public class MainActivity extends AppCompatActivity {
     public DbHelper getDBHelp() {
         return dbHelper;
     }
-    //public SQLiteDatabase getDB(){
-    //    return db;
-    //}
-
 
     @Override
     public void onBackPressed() {
@@ -130,13 +128,11 @@ public class MainActivity extends AppCompatActivity {
 
     String rootPath=null;
     private GameView gameView;
-    //private GameViewNormal gameViewNormal;
     private Button btn1;
     private Button btn2;
     private Button btn3;
     public int gameMode;
     private DbHelper dbHelper;
-    //private SQLiteDatabase db=null;
     private FrameLayout viewLayout;
     private String rcName=null;
 }
