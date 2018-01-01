@@ -41,11 +41,6 @@ public class Config {
             "ffc56775",     //2097152
     };
 
-    //public static void initColorList()
-    //{
-    //
-    //}
-
     public static void initBpList(String url)
     {
         int cnt=colorList.size();

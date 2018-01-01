@@ -230,10 +230,6 @@ public class StartActivity extends AppCompatActivity {
                 recycleAdapter.notifyDataSetChanged();
                 dialogInterface.dismiss();
                 Config.game_theme=themesList.get(themeCheckedIndex);
-
-                //主题加载
-                //File pf=new File(rootPath+"/themes"+"/"+Config.game_theme+"/"+Config.game_theme);
-                //loadTheme(pf);
             }
         });
         builder.create();
@@ -493,7 +489,7 @@ public class StartActivity extends AppCompatActivity {
             case 3:     //图片
             default:    //数字+颜色
             {
-                int base=1;
+                int base=0;
                 val=properties.getProperty("show_0");
                 if(val==null)   //读取失败
                 {
@@ -509,10 +505,10 @@ public class StartActivity extends AppCompatActivity {
                 }
                 Config.colorList.add(val);
 
-                int trycnt=30;
+                int trycnt=40;
                 while((trycnt--)>0)
                 {
-                    base*=2;
+                    base++;
                     val=properties.getProperty("show_"+base);
                     if(val==null)       //说明查找完毕
                     {
@@ -547,27 +543,27 @@ public class StartActivity extends AppCompatActivity {
 
         properties.setProperty("show_0",Config.NumTable[num_index++]);
         properties.setProperty("show_other",Config.NumTable[num_index++]);
+        properties.setProperty("show_1",Config.NumTable[num_index++]);
         properties.setProperty("show_2",Config.NumTable[num_index++]);
+        properties.setProperty("show_3",Config.NumTable[num_index++]);
         properties.setProperty("show_4",Config.NumTable[num_index++]);
+        properties.setProperty("show_5",Config.NumTable[num_index++]);
+        properties.setProperty("show_6",Config.NumTable[num_index++]);
+        properties.setProperty("show_7",Config.NumTable[num_index++]);
         properties.setProperty("show_8",Config.NumTable[num_index++]);
+        properties.setProperty("show_9",Config.NumTable[num_index++]);
+        properties.setProperty("show_10",Config.NumTable[num_index++]);
+        properties.setProperty("show_11",Config.NumTable[num_index++]);
+        properties.setProperty("show_12",Config.NumTable[num_index++]);
+        properties.setProperty("show_13",Config.NumTable[num_index++]);
+        properties.setProperty("show_14",Config.NumTable[num_index++]);
+        properties.setProperty("show_15",Config.NumTable[num_index++]);
         properties.setProperty("show_16",Config.NumTable[num_index++]);
-        properties.setProperty("show_32",Config.NumTable[num_index++]);
-        properties.setProperty("show_64",Config.NumTable[num_index++]);
-        properties.setProperty("show_128",Config.NumTable[num_index++]);
-        properties.setProperty("show_256",Config.NumTable[num_index++]);
-        properties.setProperty("show_512",Config.NumTable[num_index++]);
-        properties.setProperty("show_1024",Config.NumTable[num_index++]);
-        properties.setProperty("show_2048",Config.NumTable[num_index++]);
-        properties.setProperty("show_4096",Config.NumTable[num_index++]);
-        properties.setProperty("show_8192",Config.NumTable[num_index++]);
-        properties.setProperty("show_16384",Config.NumTable[num_index++]);
-        properties.setProperty("show_32768",Config.NumTable[num_index++]);
-        properties.setProperty("show_65536",Config.NumTable[num_index++]);
-        properties.setProperty("show_131072",Config.NumTable[num_index++]);
-        properties.setProperty("show_262144",Config.NumTable[num_index++]);
-        properties.setProperty("show_524288",Config.NumTable[num_index++]);
-        properties.setProperty("show_1048676",Config.NumTable[num_index++]);
-        properties.setProperty("show_2097152",Config.NumTable[num_index++]);
+        properties.setProperty("show_17",Config.NumTable[num_index++]);
+        properties.setProperty("show_18",Config.NumTable[num_index++]);
+        properties.setProperty("show_19",Config.NumTable[num_index++]);
+        properties.setProperty("show_20",Config.NumTable[num_index++]);
+        properties.setProperty("show_21",Config.NumTable[num_index++]);
 
         try {
             properties.store(fos, null);

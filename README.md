@@ -7,6 +7,7 @@
 |-|-|
 |appConfig|Pure2048的配置文件|
 |themes/|Pure2048的主题文件夹|
+|recorders/|档案文件|
 
 ## appConfig文件介绍
 
@@ -46,28 +47,29 @@ theme_chaodai配置文件参考如下：
 show_style=3
 
 show_0=0_null.png
-show_2=1_xia.png
-show_4=2_shang.png
-show_8=3_zhou.png
-show_16=4_chunqiu.png
-show_32=5_zhanguo.png
-show_64=6_qin.png
-show_128=7_han.png
-show_256=8_sanguo.png
-show_512=9_jin.png
-show_1024=10_nanchao.png
-show_2048=11_beichao.png
-show_4096=12_sui.png
-show_8192=13_tang.png
-show_16384=14_wudai.png
-show_32768=15_shiguo.png
-show_65536=16_song.png
-show_131072=17_liao.png
-show_262144=18_jin.png
-show_524288=19_yuan.png
-show_1048676=20_ming.png
-show_2097152=21_qing.png
 show_other=0_null.png
+show_1=1_xia.png
+show_2=2_shang.png
+show_3=3_zhou.png
+show_4=4_chunqiu.png
+show_5=5_zhanguo.png
+show_6=6_qin.png
+show_7=7_han.png
+show_8=8_sanguo.png
+show_9=9_jin.png
+show_1=10_nanchao.png
+show_11=11_beichao.png
+show_12=12_sui.png
+show_13=13_tang.png
+show_14=14_wudai.png
+show_15=15_shiguo.png
+show_16=16_song.png
+show_17=17_liao.png
+show_18=18_jin.png
+show_19=19_yuan.png
+show_20=20_ming.png
+show_21=21_qing.png
+
 
 ```
 
@@ -75,7 +77,7 @@ show_other=0_null.png
 |-|-|
 |show_style|0、1、2、3|表示方块显示样式，=0只显示数字，不显示颜色，=1只显示颜色不显示数字，=2数字颜色都显示，=3显示图片|
 |show_0|表示空白方块的颜色,比如ffc0c0c0|
-|show_x|x应该是2的n次方，比如2、4、8、16等，该字段的表示对应值的方块的颜色或者图片|
+|show_x|x应该是依次递增的方块，该字段的表示对应值的方块的颜色或者图片|
 |show_other|表示其他未知方块的颜色或者图片|
 
 **注意：**
@@ -119,3 +121,19 @@ show_other=0_null.png
 ## 使用拓展朝代主题，5x5
 
 ![预览2](https://raw.githubusercontent.com/qiuzhiqian/Pure2048/master/doc/review8.png)
+
+## 使用拓展生肖主题，4x4
+
+![预览2](https://raw.githubusercontent.com/qiuzhiqian/Pure2048/master/doc/review9.png)
+
+## 使用拓展天干地支主题，4x4
+
+![预览2](https://raw.githubusercontent.com/qiuzhiqian/Pure2048/master/doc/review10.png)
+
+## 使用拓展军旗主题，4x4
+
+![预览2](https://raw.githubusercontent.com/qiuzhiqian/Pure2048/master/doc/review11.png)
+
+## 使用拓展元素周期律主题，4x4
+
+![预览2](https://raw.githubusercontent.com/qiuzhiqian/Pure2048/master/doc/review11.png)
