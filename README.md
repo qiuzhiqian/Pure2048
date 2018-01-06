@@ -1,6 +1,14 @@
 # Pure2048
 
 这是一款纯净小巧的2048休闲游戏android版本  
+
+##特色  
+
+1.  纯净开源。  
+2.  配置灵活，包括方格数量，方格主题，档案保存，音效使用。  
+3.  多主题导入，可使用本软件自带的主题，可以使用本人提供的拓展主题，也可以自己制作主题，完全没问题，制作简单，使用方便。  
+4.  保存档案，让你的记录不在丢失、满血复活不是梦。怕丢失记录连续撸10个小时？不存在的。  
+
 配置文件会保存到/storage/emulated/0/Android/data/com.mycode.xml.pure2048/files/下面  
 
 |文件|用途|
@@ -126,7 +134,7 @@ show_21=21_qing.png
 
 ![预览2](https://raw.githubusercontent.com/qiuzhiqian/Pure2048/master/doc/review9.png)
 
-## 使用拓展天干地支主题，4x4
+## 使用拓展天干地支主题，5x5
 
 ![预览2](https://raw.githubusercontent.com/qiuzhiqian/Pure2048/master/doc/review10.png)
 
@@ -136,4 +144,4 @@ show_21=21_qing.png
 
 ## 使用拓展元素周期律主题，4x4
 
-![预览2](https://raw.githubusercontent.com/qiuzhiqian/Pure2048/master/doc/review11.png)
+![预览2](https://raw.githubusercontent.com/qiuzhiqian/Pure2048/master/doc/review12.png)
